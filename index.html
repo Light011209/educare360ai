@@ -1,0 +1,3052 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>EduCare AI 360° — Kết Nối Tri Thức & Giải Đề AI</title>
+
+  <!-- Cấu hình PWA / Chạy toàn màn hình như App thật trên iPhone & Android -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="EduCare AI" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="EduCare AI" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <link id="appIconLink" rel="icon" type="image/png" href="" />
+  <link id="appleTouchIconLink" rel="apple-touch-icon" href="" />
+  <link id="manifestLink" rel="manifest" href="" />
+
+  <!-- Thư viện vẽ sơ đồ tư duy Mermaid.js -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <!-- Thư viện đọc & xuất tệp đa định dạng (.docx, .pptx, .xlsx, .pdf) trực tiếp trên trình duyệt -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --text-color: #0f172a;
+      --muted-text: #475569;
+      --primary: #1d4ed8;
+      --primary-dark: #1e40af;
+      --primary-light: #dbeafe;
+      --accent: #059669;
+      --accent-light: #dcfce7;
+      --border-color: #cbd5e1;
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --base-font-size: 16px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body.high-contrast {
+      --bg-color: #000000;
+      --card-bg: #121212;
+      --text-color: #ffea00;
+      --muted-text: #fde047;
+      --primary: #ffea00;
+      --primary-dark: #eab308;
+      --primary-light: #262626;
+      --accent: #4ade80;
+      --accent-light: #14532d;
+      --border-color: #ffea00;
+      --nav-bg: #0a0a0a;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: var(--base-font-size);
+      line-height: 1.55;
+      padding-bottom: calc(84px + var(--safe-bottom));
+    }
+
+    .top-app-bar {
+      background: #0f172a;
+      color: #ffffff;
+      padding: calc(10px + var(--safe-top)) 14px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 120;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.25);
+    }
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 1.0em;
+    }
+    .brand-badge {
+      background: #2563eb;
+      color: #fff;
+      font-size: 0.68em;
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+    .a11y-btns {
+      display: flex;
+      gap: 5px;
+    }
+    .a11y-btns button {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #475569;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 0.8em;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .install-banner {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    }
+    .install-banner-text {
+      font-size: 0.85em;
+      line-height: 1.4;
+    }
+    .install-banner-text strong {
+      display: block;
+      font-size: 1.02em;
+      margin-bottom: 2px;
+    }
+    .install-banner-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .btn-install-guide {
+      background: #ffffff;
+      color: #1d4ed8;
+      border: none;
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.82em;
+      cursor: pointer;
+    }
+    .btn-dismiss-banner {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .stat-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 8px 6px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 1.1em;
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+    }
+    .stat-lbl {
+      font-size: 0.74em;
+      color: var(--muted-text);
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.08em;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 0.92em;
+    }
+
+    select, textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 0.98em;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+
+    .grid-2-col {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 8px;
+    }
+
+    .kntt-badge-box {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 0.85em;
+    }
+    .kntt-badge-title {
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .upload-box {
+      border: 2px dashed var(--primary);
+      background: var(--primary-light);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .upload-box.solver-upload {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .upload-box input[type="file"] {
+      width: 100%;
+      font-size: 0.94em;
+      color: var(--text-color);
+    }
+    .upload-hint {
+      font-size: 0.81em;
+      margin-top: 6px;
+      opacity: 0.92;
+    }
+
+    .format-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 8px;
+    }
+    .fmt-pill {
+      background: var(--card-bg);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      font-size: 0.72em;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .upload-box.solver-upload .fmt-pill {
+      color: #047857;
+      border-color: #059669;
+    }
+    .doc-list-wrapper {
+      margin-bottom: 12px;
+    }
+    .doc-item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      border-radius: 10px;
+      padding: 9px 11px;
+      margin-bottom: 7px;
+    }
+    .doc-item-card.solver-doc {
+      border-left-color: #059669;
+    }
+    .doc-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .doc-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .doc-item-name {
+      font-weight: 700;
+      font-size: 0.88em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .doc-item-meta {
+      font-size: 0.76em;
+      color: var(--muted-text);
+      margin-top: 2px;
+    }
+    .doc-item-actions {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .btn-doc-view {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 7px;
+      padding: 4px 8px;
+      font-size: 0.76em;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-doc-del {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: none;
+      border-radius: 7px;
+      width: 26px;
+      height: 26px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .doc-extracted-preview {
+      display: none;
+      margin-top: 8px;
+      padding: 8px;
+      background: var(--bg-color);
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      font-size: 0.8em;
+      max-height: 170px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.86em;
+      font-weight: 700;
+    }
+    .btn-clear-all {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.84em;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    @media (min-width: 560px) {
+      .preview-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+    .preview-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      aspect-ratio: 3 / 4;
+      background: #e2e8f0;
+    }
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .remove-img-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.85);
+      color: #fff;
+      border: none;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-badge {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      background: rgba(15, 23, 42, 0.8);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.04em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+    }
+    .btn-solver {
+      background: #059669;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+    }
+    body.high-contrast .btn-primary { color: #000000; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .app-screen { display: none; }
+    .app-screen.active { display: block; }
+
+    .sub-tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .sub-tabs::-webkit-scrollbar { display: none; }
+    .sub-tab-btn {
+      flex: 0 0 auto;
+      padding: 9px 13px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      border-radius: 99px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85em;
+      white-space: nowrap;
+    }
+    .sub-tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    body.high-contrast .sub-tab-btn.active { color: #000; }
+
+    .sub-content { display: none; }
+    .sub-content.active { display: block; }
+
+    /* Bảng Đáp Án Nhanh & Thẻ Giải Từng Câu */
+    .quick-key-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    @media (min-width: 520px) {
+      .quick-key-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+    .quick-key-pill {
+      background: var(--accent-light);
+      color: #14532d;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 0.85em;
+      font-weight: 800;
+      text-align: center;
+    }
+    body.high-contrast .quick-key-pill { color: #ffea00; border-color: #ffea00; }
+
+    .solved-card {
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      background: var(--card-bg);
+    }
+    .solved-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .solved-q-num {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 1.02em;
+    }
+    .solved-ans-badge {
+      background: #16a34a;
+      color: #ffffff;
+      padding: 4px 11px;
+      border-radius: 99px;
+      font-weight: 800;
+      font-size: 0.88em;
+    }
+    .solved-q-text {
+      font-weight: 600;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border-color);
+      white-space: pre-line;
+    }
+    .solved-formula-box {
+      background: var(--primary-light);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.88em;
+      margin-bottom: 8px;
+    }
+    .solved-steps {
+      white-space: pre-line;
+      font-size: 0.95em;
+      line-height: 1.65;
+      margin-bottom: 8px;
+    }
+    .solved-tip {
+      background: #fef3c7;
+      color: #78350f;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.86em;
+      margin-bottom: 8px;
+    }
+    body.high-contrast .solved-tip { background: #262626; color: #ffea00; }
+
+    /* Thanh công cụ Sơ đồ tư duy */
+    .mindmap-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      padding: 8px 10px;
+      background: var(--primary-light);
+      border-radius: 10px;
+    }
+    .zoom-btns {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .zoom-btns button {
+      padding: 5px 9px;
+      border-radius: 7px;
+      border: 1px solid var(--primary);
+      background: var(--card-bg);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.82em;
+      cursor: pointer;
+    }
+    .mindmap-viewport {
+      overflow: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fafcff;
+      max-height: 520px;
+      -webkit-overflow-scrolling: touch;
+    }
+    body.high-contrast .mindmap-viewport { background: #0a0a0a; }
+    #mermaidContainer {
+      transform-origin: top left;
+      transition: transform 0.15s ease;
+      display: inline-block;
+      min-width: 100%;
+    }
+
+    /* Flashcard 3D */
+    .flashcard-stage { perspective: 1000px; margin: 12px 0; }
+    .flashcard-box {
+      background: linear-gradient(145deg, var(--primary-light), var(--card-bg));
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      min-height: 190px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+    .fc-side-tag {
+      font-size: 0.75em;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .fc-main-text { font-size: 1.1em; font-weight: 700; white-space: pre-line; }
+    .fc-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .fc-controls button {
+      flex: 1;
+      padding: 9px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .keyword-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0;
+      list-style: none;
+    }
+    .keyword-list li {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    .audio-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .audio-controls button, .audio-controls select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    .quiz-scoreboard {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 12px;
+      background: var(--primary-light);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 0.88em;
+      color: var(--primary);
+    }
+    .quiz-action-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .btn-mini {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--primary);
+      background: var(--card-bg);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.82em;
+      cursor: pointer;
+    }
+    .quiz-item {
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+    }
+    .level-badge {
+      display: inline-block;
+      font-size: 0.76em;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      margin-right: 4px;
+    }
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin: 6px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      cursor: pointer;
+      font-size: 0.96em;
+    }
+    .quiz-option.correct { background: #dcfce7; border-color: #16a34a; color: #14532d; font-weight: 700; }
+    .quiz-option.wrong { background: #fee2e2; border-color: #dc2626; color: #7f1d1d; }
+    .explanation {
+      font-size: 0.9em;
+      margin-top: 6px;
+      padding: 9px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      display: none;
+    }
+
+    .chat-box {
+      max-height: 320px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: var(--bg-color);
+    }
+    .chat-msg {
+      padding: 9px 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 0.94em;
+      white-space: pre-line;
+    }
+    .chat-msg.user {
+      background: var(--primary);
+      color: #fff;
+      margin-left: 16%;
+    }
+    body.high-contrast .chat-msg.user { color: #000; }
+    .chat-msg.ai {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      margin-right: 10%;
+    }
+    .chat-input-row { display: flex; gap: 8px; }
+    .chat-input-row input { margin-bottom: 0; flex: 1; }
+    .chat-input-row button {
+      padding: 0 16px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    body.high-contrast .chat-input-row button { color: #000; }
+
+    .history-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-bg);
+    }
+    .history-info { flex: 1; cursor: pointer; }
+    .history-title { font-weight: 700; color: var(--primary); font-size: 0.96em; }
+    .history-meta { font-size: 0.79em; color: var(--muted-text); margin-top: 2px; }
+    .btn-del-hist {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: none;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Thanh điều hướng đáy 5 tab chuẩn Mobile App */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 6px 2px calc(6px + var(--safe-bottom));
+      z-index: 150;
+    }
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--muted-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 0.71em;
+      font-weight: 700;
+      padding: 4px 1px;
+      cursor: pointer;
+    }
+    .nav-item .nav-icon { font-size: 1.4em; }
+    .nav-item.active { color: var(--primary); }
+
+    .loading-panel {
+      display: none;
+      text-align: center;
+      padding: 16px;
+      font-weight: 600;
+      color: var(--primary);
+      background: var(--card-bg);
+      border: 2px dashed var(--primary);
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+    .loading-sub {
+      font-size: 0.82em;
+      font-weight: 400;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+    .btn-cancel {
+      margin-top: 10px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid #dc2626;
+      background: #fee2e2;
+      color: #991b1b;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .speed-badge {
+      display: inline-block;
+      font-size: 0.78em;
+      padding: 4px 11px;
+      border-radius: 20px;
+      background: #dcfce7;
+      color: #15803d;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.68);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-card {
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      max-width: 420px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .step-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 0.93em;
+    }
+    .step-num {
+      background: var(--primary);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.82em;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Thanh App trên cùng -->
+  <div class="top-app-bar">
+    <div class="brand-title">
+      <span>🎓 EduCare AI 360°</span>
+      <span class="brand-badge">KNTT 2026</span>
+    </div>
+    <div class="a11y-btns">
+      <button type="button" onclick="changeFontSize(-2)">A-</button>
+      <button type="button" onclick="changeFontSize(2)">A+</button>
+      <button type="button" onclick="toggleContrast()">🌓</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Banner Cài ra Màn hình chính -->
+    <div id="installBanner" class="install-banner">
+      <div class="install-banner-text">
+        <strong>📲 Cài EduCare AI thành App trên điện thoại</strong>
+        Mở toàn màn hình, kho SGK Kết nối tri thức 10–11–12 & Giải đề AI!
+      </div>
+      <div class="install-banner-actions">
+        <button type="button" class="btn-install-guide" onclick="openInstallModal()">Cách cài</button>
+        <button type="button" class="btn-dismiss-banner" onclick="dismissInstallBanner()">✕</button>
+      </div>
+    </div>
+
+    <!-- Dải thống kê học tập -->
+    <div class="stats-strip">
+      <div class="stat-pill">
+        <span id="statLessons" class="stat-num">0</span>
+        <span class="stat-lbl">Bài & Đề đã lưu</span>
+      </div>
+      <div class="stat-pill">
+        <span id="statQuestions" class="stat-num">0</span>
+        <span class="stat-lbl">Câu đã luyện</span>
+      </div>
+      <div class="stat-pill">
+        <span id="statStreak" class="stat-num">1 ngày</span>
+        <span class="stat-lbl">Chuỗi học tập</span>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MÀN HÌNH 1: HỌC BÀI MỚI (SƠ ĐỒ + FLASHCARD + PODCAST + ĐỀ 18 CÂU)   -->
+    <!-- =================================================================== -->
+    <div id="screenCreate" class="app-screen active">
+      <div class="card">
+        <h3>📸 Tóm tắt SGK Kết nối tri thức 10–11–12</h3>
+        <div class="grid-2-col">
+          <div>
+            <label for="gradeSelect">1. Khối lớp:</label>
+            <select id="gradeSelect" onchange="onCurriculumFilterChange('create')">
+              <option value="12" selected>Lớp 12</option>
+              <option value="11">Lớp 11</option>
+              <option value="10">Lớp 10</option>
+            </select>
+          </div>
+          <div>
+            <label for="subjectSelect">2. Môn học (KNTT):</label>
+            <select id="subjectSelect" onchange="onCurriculumFilterChange('create')"></select>
+          </div>
+        </div>
+
+        <label for="chapterSelect">3. Chương / Chuyên đề chuẩn Kết nối tri thức 2026:</label>
+        <select id="chapterSelect" onchange="updateKnttPreviewBox('create')"></select>
+
+        <div id="knttPreviewCreate" class="kntt-badge-box"></div>
+
+        <label for="imageInput">4. Tải tệp bài học / câu hỏi (.DOCX, .PPTX, .PDF, .XLSX, .TXT) hoặc ảnh SGK:</label>
+        <div class="upload-box">
+          <input type="file" id="imageInput" accept="image/*,.docx,.doc,.pptx,.ppt,.pdf,.xlsx,.xls,.csv,.txt,.md,.rtf,.json,.html,.htm,.xml,.odt,.odp,.ods" multiple onchange="handleMixedFiles(event, 'create')" />
+          <div id="uploadHint" class="upload-hint">⚡ Hỗ trợ đọc thẳng Word, PowerPoint, PDF, Excel, TXT & tối đa 10 ảnh SGK</div>
+          <div class="format-badges-row">
+            <span class="fmt-pill">.DOCX</span>
+            <span class="fmt-pill">.PPTX</span>
+            <span class="fmt-pill">.PDF</span>
+            <span class="fmt-pill">.XLSX</span>
+            <span class="fmt-pill">.TXT / .CSV</span>
+            <span class="fmt-pill">ẢNH SGK</span>
+          </div>
+        </div>
+
+        <div id="createDocsWrapper" class="doc-list-wrapper" style="display: none;">
+          <div class="preview-header">
+            <span id="createDocCountText">Đã nạp 0 tệp tài liệu</span>
+            <button type="button" class="btn-clear-all" onclick="clearAllDocs('create')">🗑️ Xóa tệp</button>
+          </div>
+          <div id="createDocsList"></div>
+        </div>
+
+        <div id="previewWrapper" style="display: none;">
+          <div class="preview-header">
+            <span id="imageCountText">Đã chọn 0/10 ảnh</span>
+            <button type="button" class="btn-clear-all" onclick="clearAllImages('create')">🗑️ Xóa ảnh</button>
+          </div>
+          <div id="previewGrid" class="preview-grid"></div>
+        </div>
+
+        <details style="margin-bottom: 12px;">
+          <summary style="cursor: pointer; font-weight: 600; font-size: 0.88em;">+ Dán thêm ghi chú / nội dung SGK bổ sung (Tùy chọn)</summary>
+          <textarea id="ragInput" rows="3" placeholder="Dán thêm nội dung từ file .txt nếu muốn AI bám sát từng câu chữ..."></textarea>
+        </details>
+
+        <button type="button" class="btn-primary" id="analyzeBtn" onclick="processLesson()">✨ Phân tích bài học Kết nối tri thức</button>
+      </div>
+
+      <div id="loadingBox" class="loading-panel">
+        <div id="loadingText">⚡ Đang gửi ảnh lên máy chủ Turbo AI... (0s)</div>
+        <div id="loadingSub" class="loading-sub">Đang đối chiếu Kho tri thức Kết nối tri thức 2026 & xử lý tách 2 luồng...</div>
+        <button type="button" class="btn-cancel" onclick="cancelAnalysis()">✖ Hủy yêu cầu</button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MÀN HÌNH 2: GIẢI ĐÁP ÁN & BÀI TẬP CHI TIẾT (TOÁN, LÝ, HÓA, SINH...) -->
+    <!-- =================================================================== -->
+    <div id="screenSolver" class="app-screen">
+      <div class="card">
+        <h3>✍️ Giải Đề Trắc Nghiệm & Bài Tập Chi Tiết</h3>
+        <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 0;">Chụp phiếu trắc nghiệm, bài tập Toán, Lý, Hóa, Sinh, Anh, Sử, Địa... AI sẽ tách từng câu, chốt đáp án và giải thích từng bước theo chuẩn Kết nối tri thức 2026.</p>
+
+        <div class="grid-2-col">
+          <div>
+            <label for="solverGradeSelect">1. Khối lớp:</label>
+            <select id="solverGradeSelect" onchange="onCurriculumFilterChange('solver')">
+              <option value="12" selected>Lớp 12</option>
+              <option value="11">Lớp 11</option>
+              <option value="10">Lớp 10</option>
+            </select>
+          </div>
+          <div>
+            <label for="solverSubjectSelect">2. Môn học (KNTT):</label>
+            <select id="solverSubjectSelect" onchange="onCurriculumFilterChange('solver')"></select>
+          </div>
+        </div>
+
+        <label for="solverModeSelect">3. Chế độ giải đáp án:</label>
+        <select id="solverModeSelect">
+          <option value="detailed" selected>📘 Giải chi tiết từng câu (Đáp án + Công thức + Các bước giải + Mẹo)</option>
+          <option value="quick_key">⚡ Chốt nhanh Bảng Đáp Án + Giải thích ngắn gọn (Cho đề nhiều câu)</option>
+        </select>
+
+        <label for="solverImageInput">4. Tải tệp đề bài / trắc nghiệm (.DOCX, .PPTX, .PDF, .XLSX, .TXT) hoặc ảnh chụp:</label>
+        <div class="upload-box solver-upload">
+          <input type="file" id="solverImageInput" accept="image/*,.docx,.doc,.pptx,.ppt,.pdf,.xlsx,.xls,.csv,.txt,.md,.rtf,.json,.html,.htm,.xml,.odt,.odp,.ods" multiple onchange="handleMixedFiles(event, 'solver')" />
+          <div id="solverUploadHint" class="upload-hint">🔍 Tự động trích xuất toàn bộ câu hỏi & trắc nghiệm từ Word, PowerPoint, PDF, Excel, TXT hoặc ảnh</div>
+          <div class="format-badges-row">
+            <span class="fmt-pill">.DOCX / .DOC</span>
+            <span class="fmt-pill">.PPTX / .PPT</span>
+            <span class="fmt-pill">.PDF</span>
+            <span class="fmt-pill">.XLSX / .CSV</span>
+            <span class="fmt-pill">.TXT / .RTF</span>
+            <span class="fmt-pill">ẢNH HD</span>
+          </div>
+        </div>
+
+        <div id="solverDocsWrapper" class="doc-list-wrapper" style="display: none;">
+          <div class="preview-header">
+            <span id="solverDocCountText">Đã nạp 0 tệp đề bài</span>
+            <button type="button" class="btn-clear-all" onclick="clearAllDocs('solver')">🗑️ Xóa tệp</button>
+          </div>
+          <div id="solverDocsList"></div>
+        </div>
+
+        <div id="solverPreviewWrapper" style="display: none;">
+          <div class="preview-header">
+            <span id="solverImageCountText">Đã chọn 0/10 ảnh đề</span>
+            <button type="button" class="btn-clear-all" onclick="clearAllImages('solver')">🗑️ Xóa ảnh</button>
+          </div>
+          <div id="solverPreviewGrid" class="preview-grid"></div>
+        </div>
+
+        <label for="solverTextInput">5. Hoặc nhập / dán đề bài & ghi chú (Tùy chọn):</label>
+        <textarea id="solverTextInput" rows="3" placeholder="Ví dụ: Dán câu hỏi bằng chữ tại đây, hoặc ghi chú: 'Giải chi tiết từ câu 1 đến câu 10'..."></textarea>
+
+        <button type="button" class="btn-primary btn-solver" id="solveBtn" onclick="processSolveExercises()">🚀 Giải đáp án & Hướng dẫn cách làm</button>
+      </div>
+
+      <div id="solverLoadingBox" class="loading-panel">
+        <div id="solverLoadingText">🔍 Đang đọc đề bài & phân tích lời giải... (0s)</div>
+        <div id="solverLoadingSub" class="loading-sub">AI đang kiểm tra từng bước tính toán và đối chiếu công thức Kết nối tri thức...</div>
+        <button type="button" class="btn-cancel" onclick="cancelAnalysis()">✖ Hủy yêu cầu</button>
+      </div>
+
+      <!-- Khu vực hiển thị kết quả giải bài tập -->
+      <div id="solverResultSection" style="display: none;">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <span id="solverStatusBadge" class="speed-badge" style="margin-bottom:0;">✅ Đã giải xong</span>
+            <div class="zoom-btns">
+              <button type="button" onclick="downloadSolvedDocx()">📥 Tải .DOCX</button>
+              <button type="button" onclick="speakSolverResults()">🔊 Nghe</button>
+              <button type="button" onclick="stopPodcast()">⏹️ Dừng</button>
+              <button type="button" onclick="shareSolvedResults()">📤 Chia sẻ</button>
+            </div>
+          </div>
+
+          <h3>📋 Bảng Chốt Đáp Án Nhanh</h3>
+          <div id="quickKeyGrid" class="quick-key-grid"></div>
+
+          <h3>📖 Lời Giải & Giải Thích Chi Tiết Từng Câu</h3>
+          <div id="solvedQuestionsContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MÀN HÌNH 3: KẾT QUẢ HỌC TẬP (SƠ ĐỒ, FLASHCARD, PODCAST, ĐỀ, GIA SƯ) -->
+    <!-- =================================================================== -->
+    <div id="screenResult" class="app-screen">
+      <div id="emptyResultNotice" class="card" style="text-align: center;">
+        <p>Chưa có bài học nào đang mở. Bạn hãy chụp trang sách ở tab <strong>Học bài</strong>, giải đề ở tab <strong>Giải đề</strong>, hoặc mở lại bài cũ trong <strong>Thư viện</strong> nhé!</p>
+        <button type="button" class="btn-primary" onclick="switchScreen('screenCreate')">📸 Chụp bài học ngay</button>
+      </div>
+
+      <div id="resultWorkspace" style="display: none;">
+        <div style="text-align: center;">
+          <span id="speedStatusBadge" class="speed-badge">⚡ Sẵn sàng học tập</span>
+        </div>
+
+        <div class="sub-tabs">
+          <button type="button" class="sub-tab-btn active" onclick="switchSubTab('subMindmap', this)">🧠 Sơ đồ</button>
+          <button type="button" class="sub-tab-btn" onclick="switchSubTab('subFlashcard', this)">🃏 Flashcard</button>
+          <button type="button" class="sub-tab-btn" id="quizSubTabBtn" onclick="switchSubTab('subQuiz', this)">📝 Trắc nghiệm</button>
+          <button type="button" class="sub-tab-btn" onclick="switchSubTab('subPodcast', this)">🎧 Podcast & OCR</button>
+          <button type="button" class="sub-tab-btn" onclick="switchSubTab('subTutor', this)">💬 Gia sư AI</button>
+        </div>
+
+        <!-- Sub 1: Sơ đồ tư duy -->
+        <div id="subMindmap" class="card sub-content active">
+          <h3>Sơ đồ tư duy chi tiết (Kết nối tri thức)</h3>
+          <div class="mindmap-toolbar">
+            <div class="zoom-btns">
+              <button type="button" onclick="zoomMindmap(-0.15)">🔍-</button>
+              <button type="button" onclick="resetMindmapZoom()">100%</button>
+              <button type="button" onclick="zoomMindmap(0.15)">🔍+</button>
+            </div>
+            <div class="zoom-btns">
+              <button type="button" onclick="downloadMindmapPng()">📥 Lưu ảnh</button>
+              <button type="button" onclick="shareLessonSummary()">📤 Chia sẻ</button>
+            </div>
+          </div>
+          <div class="mindmap-viewport">
+            <div id="mermaidContainer"></div>
+          </div>
+        </div>
+
+        <!-- Sub 2: Flashcard -->
+        <div id="subFlashcard" class="card sub-content">
+          <h3>🃏 Flashcard Lật thẻ Ghi nhớ nhanh</h3>
+          <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 0;">Chạm vào thẻ để lật xem giải thích chi tiết</p>
+          <div class="flashcard-stage">
+            <div class="flashcard-box" onclick="flipFlashcard()">
+              <span id="fcSideTag" class="fc-side-tag">MẶT TRƯỚC • TỪ KHÓA / CÂU HỎI</span>
+              <div id="fcMainText" class="fc-main-text">Đang tải thẻ...</div>
+            </div>
+          </div>
+          <div class="fc-controls">
+            <button type="button" onclick="prevFlashcard()">⬅️ Trước</button>
+            <span id="fcCounter" style="font-weight: 800; font-size: 0.9em;">1 / 1</span>
+            <button type="button" onclick="nextFlashcard()">Tiếp ➡️</button>
+          </div>
+        </div>
+
+        <!-- Sub 3: Trắc nghiệm -->
+        <div id="subQuiz" class="card sub-content">
+          <h3>📝 Luyện tập thích ứng phân hóa</h3>
+          <div class="quiz-scoreboard">
+            <span id="quizScoreText">Đã làm: 0/0 • Đúng: 0 • Điểm: 0.0/10</span>
+            <span id="examTimerText" style="display:none;">⏱️ 15:00</span>
+          </div>
+          <div class="quiz-action-bar">
+            <button type="button" class="btn-mini" onclick="downloadQuizDocx()">📥 Tải đề .DOCX</button>
+            <button type="button" class="btn-mini" onclick="startExamTimer()">⏱️ Thi thử 15p</button>
+            <button type="button" class="btn-mini" onclick="filterWrongQuestions()">🎯 Ôn câu sai</button>
+            <button type="button" class="btn-mini" onclick="resetCurrentQuiz()">🔄 Làm lại</button>
+          </div>
+          <p id="weakTopicNotice" style="font-size: 0.85em; opacity: 0.85;"></p>
+          <div id="quizContainer"></div>
+        </div>
+
+        <!-- Sub 4: Podcast & OCR -->
+        <div id="subPodcast" class="card sub-content">
+          <h3>🎧 Audio Podcast giảng bài</h3>
+          <div class="audio-controls">
+            <button type="button" onclick="speakPodcast()">▶️ Nghe</button>
+            <button type="button" onclick="pausePodcast()">⏸️ Tạm dừng</button>
+            <button type="button" onclick="stopPodcast()">⏹️ Dừng</button>
+            <select id="speechRateSelect" aria-label="Tốc độ đọc">
+              <option value="0.9">0.9x</option>
+              <option value="1.0" selected>1.0x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+            </select>
+          </div>
+          <p id="podcastScript" style="white-space: pre-line;"></p>
+          <hr style="border: none; border-top: 1px dashed var(--border-color); margin: 14px 0;" />
+          <h3>🔑 5 Từ khóa cốt lõi</h3>
+          <ul id="keywordList" class="keyword-list"></ul>
+          <h3>📄 Nội dung tổng hợp (Vision OCR)</h3>
+          <p id="ocrText" style="white-space: pre-line;"></p>
+        </div>
+
+        <!-- Sub 5: Gia sư AI -->
+        <div id="subTutor" class="card sub-content">
+          <h3>💬 Gia sư AI Hỏi - Đáp theo bài học & đề giải</h3>
+          <p style="font-size: 0.84em; color: var(--muted-text); margin-top: 0;">Hỏi bất kỳ công thức, câu trắc nghiệm khó hoặc xin mẹo giải nhanh:</p>
+          <div id="chatBox" class="chat-box">
+            <div class="chat-msg ai">Chào bạn! Mình đã nắm rõ kiến thức bộ Kết nối tri thức 10–11–12. Bạn cần giải thích thêm câu nào thì nhắn bên dưới nhé!</div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" id="tutorQuestionInput" placeholder="Ví dụ: Giải thích kỹ bước biến đổi câu 2..." onkeydown="if(event.key==='Enter') askTutor()" />
+            <button type="button" id="askTutorBtn" onclick="askTutor()">Gửi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MÀN HÌNH 4: THƯ VIỆN BÀI HỌC & ĐỀ ĐÃ GIẢI OFFLINE                   -->
+    <!-- =================================================================== -->
+    <div id="screenHistory" class="app-screen">
+      <div class="card">
+        <h3>📚 Thư viện Bài học & Đề giải Offline</h3>
+        <p style="font-size: 0.85em; color: var(--muted-text); margin-top: 0;">Tự động lưu 20 bài học và bộ đề đã giải gần nhất ngay trên máy để ôn tập mọi lúc không cần mạng.</p>
+        <input type="text" id="historySearchInput" placeholder="🔍 Tìm theo môn học, lớp hoặc từ khóa..." oninput="renderHistoryList()" />
+        <div id="historyListContainer"></div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MÀN HÌNH 5: KHO TRI THỨC KNTT & CÀI ĐẶT APP                         -->
+    <!-- =================================================================== -->
+    <div id="screenSettings" class="app-screen">
+      <div class="card">
+        <h3>📚 Kho Tri Thức Kết Nối Tri Thức 10–11–12 (2026)</h3>
+        <p style="font-size: 0.88em; color: var(--muted-text); margin-top: 0;">Hệ thống đã tích hợp sẵn khung chương trình, định luật, công thức trọng tâm của toàn bộ <strong>11 môn học bộ Kết nối tri thức với cuộc sống (Lớp 10, Lớp 11, Lớp 12)</strong> chuẩn GDPT 2026. Ngoài ra bạn có thể nạp thêm tệp <code>.txt</code> nội dung chi tiết từng bài vào bộ nhớ máy bên dưới:</p>
+        <input type="file" id="customTxtUpload" accept=".txt" onchange="importCustomKnttTxt(event)" />
+        <div id="customTxtStatus" style="font-size: 0.84em; color: var(--accent); font-weight: 700; margin-top: 4px;"></div>
+      </div>
+
+      <div class="card">
+        <h3>📲 Cài đặt ứng dụng ra Màn hình chính</h3>
+        <p style="font-size: 0.9em;">Biến EduCare AI 360° thành biểu tượng App độc lập trên màn hình chính iPhone/Android.</p>
+        <button type="button" class="btn-primary" onclick="openInstallModal()">📖 Xem hướng dẫn 3 bước cài App</button>
+      </div>
+
+      <div class="card">
+        <h3>🎯 Chủ đề bạn hay làm sai (AI tự ưu tiên ôn tập)</h3>
+        <p id="settingsWeakTopics" style="font-size: 0.9em; color: var(--muted-text);">Chưa ghi nhận chủ đề yếu nào.</p>
+        <button type="button" class="btn-mini" onclick="clearWeakTopics()">🗑️ Xóa danh sách chủ đề yếu</button>
+      </div>
+
+      <div class="card">
+        <h3>ℹ️ Thông tin ứng dụng</h3>
+        <p style="font-size: 0.88em; margin: 0;">
+          <strong>EduCare AI 360° — Phiên bản KNTT 2026 & Đa Định Dạng DOCX/PPTX/PDF (v8)</strong><br />
+          Tác giả: Phạm Tuấn Anh • Lớp 12C10 • THPT Trần Hưng Đạo<br />
+          Dữ liệu chuẩn: Bộ sách Kết nối tri thức với cuộc sống (Lớp 10, 11, 12 — GDPT 2026).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thanh điều hướng đáy 5 tab -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-item active" id="navCreate" onclick="switchScreen('screenCreate')">
+      <span class="nav-icon">📸</span>
+      <span>Học bài</span>
+    </button>
+    <button type="button" class="nav-item" id="navSolver" onclick="switchScreen('screenSolver')">
+      <span class="nav-icon">✍️</span>
+      <span>Giải đề</span>
+    </button>
+    <button type="button" class="nav-item" id="navResult" onclick="switchScreen('screenResult')">
+      <span class="nav-icon">🧠</span>
+      <span>Kết quả</span>
+    </button>
+    <button type="button" class="nav-item" id="navHistory" onclick="switchScreen('screenHistory')">
+      <span class="nav-icon">📚</span>
+      <span>Thư viện</span>
+    </button>
+    <button type="button" class="nav-item" id="navSettings" onclick="switchScreen('screenSettings')">
+      <span class="nav-icon">⚙️</span>
+      <span>Cài App</span>
+    </button>
+  </nav>
+
+  <!-- Modal hướng dẫn cài App -->
+  <div id="installModal" class="modal-backdrop" onclick="if(event.target===this) closeInstallModal()">
+    <div class="modal-card">
+      <h3 style="margin-top:0;">📲 Thêm EduCare AI ra Màn hình chính</h3>
+      <div class="step-row">
+        <span class="step-num">1</span>
+        <div>Mở trang web này bằng <strong>Safari</strong> (iPhone/iPad) hoặc <strong>Chrome</strong> (Android).</div>
+      </div>
+      <div class="step-row">
+        <span class="step-num">2</span>
+        <div>iPhone: Bấm nút <strong>Chia sẻ (ô vuông mũi tên lên ⬆️)</strong> ở thanh dưới cùng.<br/>Android: Bấm dấu <strong>⋮ (3 chấm)</strong> ở góc trên bên phải.</div>
+      </div>
+      <div class="step-row">
+        <span class="step-num">3</span>
+        <div>Chọn <strong>"Thêm vào Màn hình chính" (Add to Home Screen)</strong> → bấm <strong>Thêm</strong>. Biểu tượng <strong>🎓 EduCare AI</strong> sẽ xuất hiện ngay ngoài màn hình chính!</div>
+      </div>
+      <button type="button" class="btn-primary" onclick="closeInstallModal()">Đã hiểu</button>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLT2XBCJTi1JmMykpzE8Y_LG1eOHv2RqCmJkBFd3jWnWWLnalmTFGG3RX-9SnVJwEjQQ/exec";
+    const MAX_IMAGES = 10;
+
+    // =========================================================================
+    // KHO DỮ LIỆU CHƯƠNG TRÌNH KẾT NỐI TRI THỨC VỚI CUỘC SỐNG (LỚP 10, 11, 12 - 2026)
+    // =========================================================================
+    const KNTT_CURRICULUM_DB = {
+      "Toán học": {
+        "10": [
+          { title: "Toàn bộ Toán 10 (Kết nối tri thức)", summary: "Mệnh đề & tập hợp; BPT bậc nhất hai ẩn; Hệ thức lượng trong tam giác (định lí côsin, sin, diện tích); Vectơ & tọa độ Oxy; Số đặc trưng mẫu số liệu không ghép nhóm; Hàm số bậc hai & dấu tam thức bậc hai; Phương trình đường thẳng, đường tròn, Elip, Hypebol, Parabol; Đại số tổ hợp (hoán vị, chỉnh hợp, tổ hợp, nhị thức Newton); Xác suất cổ điển." },
+          { title: "Chương I–II: Mệnh đề, Tập hợp & BPT bậc nhất hai ẩn", summary: "Mệnh đề kéo theo P⇒Q, mệnh đề đảo, tương đương, phủ định ∀/∃; Phép toán tập hợp A∩B, A∪B, A\\B; Miền nghiệm của BPT và hệ BPT bậc nhất hai ẩn, bài toán tối ưu tuyến tính F(x;y)=ax+by." },
+          { title: "Chương III–IV: Hệ thức lượng tam giác & Vectơ (Oxy)", summary: "Định lí côsin a²=b²+c²-2bc.cosA; Định lí sin a/sinA=2R; Công thức diện tích S=½ab.sinC=√(p(p-a)(p-b)(p-c))=pr; Tổng hiệu vectơ, tích vô hướng a⃗.b⃗=|a⃗||b⃗|cos(a⃗,b⃗)=x₁x₂+y₁y₂." },
+          { title: "Chương VI–VII: Hàm số bậc hai, Tam thức bậc hai & Tọa độ Oxy", summary: "Parabol y=ax²+bx+c đỉnh I(-b/2a; -Δ/4a); Định lí dấu tam thức bậc hai f(x)=ax²+bx+c; Phương trình tham số & tổng quát đường thẳng, khoảng cách d(M,Δ), đường tròn (x-a)²+(y-b)²=R², ba đường conic." },
+          { title: "Chương VIII–IX: Đại số tổ hợp & Xác suất cổ điển", summary: "Quy tắc cộng, nhân; Hoán vị Pₙ=n!; Chỉnh hợp Aₙᵏ=n!/(n-k)!; Tổ hợp Cₙᵏ=n!/[k!(n-k)!]; Khai triển nhị thức Newton (a+b)⁴, (a+b)⁵; Xác suất cổ điển P(A)=n(A)/n(Ω)." }
+        ],
+        "11": [
+          { title: "Toàn bộ Toán 11 (Kết nối tri thức)", summary: "Hàm số lượng giác & phương trình lượng giác; Dãy số, cấp số cộng, cấp số nhân; Số đặc trưng mẫu số liệu ghép nhóm; Quan hệ song song trong không gian; Giới hạn & hàm số liên tục; Hàm số mũ & lôgarit; Quan hệ vuông góc trong không gian (góc, khoảng cách, thể tích); Quy tắc tính xác suất; Đạo hàm." },
+          { title: "Chương I–II: Lượng giác & Dãy số (CSC, CSN)", summary: "Công thức cộng, nhân đôi, biến đổi tích thành tổng, tổng thành tích; Phương trình lượng giác cơ bản sinx=m, cosx=m, tanx=m, cotx=m; Cấp số cộng uₙ=u₁+(n-1)d, Sₙ=n(u₁+uₙ)/2; Cấp số nhân uₙ=u₁.qⁿ⁻¹, Sₙ=u₁(1-qⁿ)/(1-q)." },
+          { title: "Chương IV & VII: Quan hệ song song & Vuông góc trong không gian", summary: "Đường thẳng song song mặt phẳng, hai mặt phẳng song song, phép chiếu song song; Đường thẳng vuông góc mặt phẳng, định lí ba đường vuông góc, góc giữa đường thẳng và mặt phẳng, góc nhị diện, khoảng cách từ điểm đến mặt phẳng, khoảng cách hai đường thẳng chéo nhau, thể tích khối chóp V=⅓B.h, lăng trụ V=B.h." },
+          { title: "Chương V–VI: Giới hạn, Liên tục & Hàm số Mũ – Lôgarit", summary: "Giới hạn dãy số, giới hạn hàm số, hàm số liên tục; Lũy thừa với số mũ thực, lôgarit logₐb, công thức đổi cơ số, hàm số y=aˣ và y=logₐx, phương trình và bất phương trình mũ – lôgarit." },
+          { title: "Chương VIII–IX: Quy tắc tính Xác suất & Đạo hàm", summary: "Biến cố hợp A∪B, biến cố giao A∩B, biến cố độc lập, P(A∪B)=P(A)+P(B)-P(A∩B), P(AB)=P(A)P(B); Quy tắc tính đạo hàm, đạo hàm hàm hợp (u(v))'=u'(v).v', ý nghĩa hình học tiếp tuyến, đạo hàm cấp hai." }
+        ],
+        "12": [
+          { title: "Toàn bộ Toán 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Ứng dụng đạo hàm khảo sát & vẽ đồ thị hàm số (đơn điệu, cực trị, GTLN-GTNN, tiệm cận đứng/ngang/xiên); Vectơ & hệ tọa độ Oxyz; Số đặc trưng đo mức độ phân tán mẫu số liệu ghép nhóm; Nguyên hàm & tích phân (diện tích hình phẳng, thể tích tròn xoay); Phương trình mặt phẳng, đường thẳng, mặt cầu Oxyz; Xác suất có điều kiện & công thức Bayes." },
+          { title: "Chương I: Ứng dụng đạo hàm khảo sát & vẽ đồ thị hàm số", summary: "Tính đơn điệu f'(x)≥0; Cực trị hàm số; GTLN - GTNN trên [a;b]; Đường tiệm cận đứng, tiệm cận ngang, tiệm cận xiên y=ax+b; Khảo sát hàm bậc ba y=ax³+bx²+cx+d, hàm phân thức (ax+b)/(cx+d) và (ax²+bx+c)/(mx+n)." },
+          { title: "Chương II & V: Hệ tọa độ Oxyz (Mặt phẳng, Đường thẳng, Mặt cầu)", summary: "Tích vô hướng, tích có hướng [u⃗,v⃗]; Phương trình mặt phẳng Ax+By+Cz+D=0; Phương trình tham số và chính tắc đường thẳng; Góc giữa hai đường thẳng, đường thẳng với mặt phẳng, hai mặt phẳng; Khoảng cách d(M,(P)); Phương trình mặt cầu (x-a)²+(y-b)²+(z-c)²=R²." },
+          { title: "Chương III & VI: Thống kê ghép nhóm & Xác suất có điều kiện (Bayes)", summary: "Khoảng biến thiên R, khoảng tứ phân vị ΔQ=Q₃-Q₁, phương sai s², độ lệch chuẩn s của mẫu số liệu ghép nhóm; Xác suất có điều kiện P(A|B)=P(A∩B)/P(B); Công thức xác suất toàn phần; Công thức Bayes P(B|A)=[P(B)P(A|B)]/P(A)." },
+          { title: "Chương IV: Nguyên hàm, Tích phân & Ứng dụng hình học", summary: "Bảng nguyên hàm cơ bản; Tính chất tích phân; Diện tích hình phẳng S=∫|f(x)-g(x)|dx; Thể tích khối tròn xoay quay quanh Ox: V=π∫[f(x)]²dx." }
+        ]
+      },
+      "Vật lí": {
+        "10": [
+          { title: "Toàn bộ Vật lí 10 (Kết nối tri thức)", summary: "Động học (vận tốc, gia tốc, chuyển động thẳng biến đổi đều d=v₀t+½at², v²-v₀²=2ad, rơi tự do h=½gt², chuyển động ném); Động lực học (3 định luật Newton, lực hấp dẫn, lực ma sát Fₘₛ=μN, momen lực M=F.d); Công, công suất, động năng Wđ=½mv², thế năng Wt=mgh, bảo toàn cơ năng; Động lượng p⃗=mv⃗, bảo toàn động lượng; Chuyển động tròn đều aₕₜ=v²/r=ω²r; Định luật Hooke Fđₕ=k|Δl|." }
+        ],
+        "11": [
+          { title: "Toàn bộ Vật lí 11 (Kết nối tri thức)", summary: "Dao động điều hòa x=Acos(ωt+φ), v=-ωAsin(ωt+φ), a=-ω²x, con lắc lò xo T=2π√(m/k), con lắc đơn T=2π√(l/g), năng lượng dao động W=½kA²; Sóng cơ & sóng điện từ v=λf, giao thoa sóng, sóng dừng; Điện trường: Định luật Coulomb F=k|q₁q₂|/(εr²), cường độ điện trường E=F/q, hiệu điện thế U=A/q, tụ điện Q=CU; Dòng điện không đổi: Định luật Ohm I=U/R, suất điện động E=I(R+r), công suất P=UI." }
+        ],
+        "12": [
+          { title: "Toàn bộ Vật lí 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Vật lí nhiệt (Nội năng, định luật I NĐLH ΔU=A+Q, nhiệt lượng Q=mcΔT, nóng chảy Q=λm, hóa hơi Q=Lm); Khí lí tưởng (Định luật Boyle p₁V₁=p₂V₂, Charles V₁/T₁=V₂/T₂, phương trình trạng thái pV=nRT, áp suất chất khí p=⅓μmv²); Từ trường & Cảm ứng điện từ (Lực từ F=BIlsinα, từ thông Φ=BScosα, suất điện động cảm ứng e=-ΔΦ/Δt, dòng xoay chiều); Vật lí hạt nhân (Độ hụt khối Δm, năng lượng liên kết Eₗₖ=Δmc², định luật phóng xạ N=N₀.2⁻ᵗ/ᵀ, phản ứng phân hạch & nhiệt hạch)." },
+          { title: "Chương I–II: Vật lí nhiệt & Khí lí tưởng", summary: "Thang nhiệt độ Celsius và Kelvin T(K)=t(°C)+273; Định luật I nhiệt động lực học ΔU=A+Q (quy ước dấu Q>0 nhận nhiệt, A>0 nhận công); Phương trình Clapeyron pV=nRT=(m/M)RT; Động năng tịnh tiến trung bình phân tử khí Wđ=3/2 kT." },
+          { title: "Chương III–IV: Từ trường, Cảm ứng điện từ & Vật lí hạt nhân", summary: "Cảm ứng từ dòng thẳng I: B=2.10⁻⁷I/r, dòng tròn B=2π.10⁻⁷NI/R, ống dây B=4π.10⁻⁷nI; Suất điện động xoay chiều e=E₀cos(ωt+φ), giá trị hiệu dụng I=I₀/√2, U=U₀/√2; Máy biến áp U₁/U₂=N₁/N₂; Phóng xạ α, β⁻, β⁺, γ; Độ phóng xạ H=λN=H₀.2⁻ᵗ/ᵀ." }
+        ]
+      },
+      "Hóa học": {
+        "10": [
+          { title: "Toàn bộ Hóa học 10 (Kết nối tri thức)", summary: "Cấu tạo nguyên tử (p, n, e, đồng vị, nguyên tử khối trung bình, cấu hình electron s, p, d, f); Bảng tuần hoàn (chu kì, nhóm, quy luật biến đổi bán kính, độ âm điện, tính kim loại/phi kim); Liên kết hóa học (ion, cộng hóa trị, liên kết hydrogen, van der Waals); Phản ứng oxi hóa - khử; Biến thiên enthalpy chuẩn ΔᵣH°₂₉₈; Tốc độ phản ứng (v=k.Cₐᵃ.Cᵦᵇ, hệ số nhiệt độ Van't Hoff γ); Nhóm VIIA Halogen." }
+        ],
+        "11": [
+          { title: "Toàn bộ Hóa học 11 (Kết nối tri thức)", summary: "Cân bằng hóa học (Hằng số Kᴄ, chuyển dịch Le Chatelier, thuyết Brønsted-Lowry, pH=-lg[H⁺], chuẩn độ acid-base); Nitrogen & Sulfur (N₂, NH₃, HNO₃, mưa acid, phú dưỡng, S, SO₂, H₂SO₄ đặc/loãng); Đại cương hóa hữu cơ (CTPT, CTCT, đồng đẳng, đồng phân, phổ hồng ngoại IR, phổ khối MS); Hydrocarbon (Alkane, Alkene, Alkyne, Arene); Dẫn xuất halogen, Alcohol, Phenol; Aldehyde, Ketone, Carboxylic acid." }
+        ],
+        "12": [
+          { title: "Toàn bộ Hóa học 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Ester – Lipid (Phản ứng thủy phân trong acid và kiềm, chất béo triester của glycerol, xà phòng & chất giặt rửa); Carbohydrate (Glucose, fructose, saccharose, maltose, tinh bột, cellulose); Hợp chất chứa nitrogen (Amine, amino acid tính lưỡng tính, peptide phản ứng màu biuret, protein, enzyme); Polymer (Trùng hợp, trùng ngưng, chất dẻo, composite, tơ, cao su); Pin điện hóa & Điện phân (Thế điện cực chuẩn E°, E°ₚᵢₙ=E°ᴄᴀᴛʜᴏᴅᴇ-E°ᴀɴᴏᴅᴇ, định luật Faraday m=AIt/nF); Đại cương kim loại & Kim loại nhóm IA, IIA, kim loại chuyển tiếp thứ nhất & phức chất." },
+          { title: "Chương I–IV: Hóa học Hữu cơ 12 (Ester, Carbohydrate, Nitrogen, Polymer)", summary: "Ester RCOOR' + NaOH → RCOONa + R'OH; Glucose & Fructose đều tráng bạc (tạo 2Ag), Saccharose không tráng bạc; Amino acid H₂N-R-COOH có tính lưỡng tính; Tripeptide trở lên có phản ứng màu biuret tím; PE, PP, PVC, PS điều chế bằng trùng hợp; Nylon-6,6, tơ lapsan điều chế bằng trùng ngưng." },
+          { title: "Chương V–VIII: Pin điện, Điện phân & Hóa học Vô cơ 12", summary: "Quy tắc alpha dự đoán chiều phản ứng oxi hóa-khử; Điện phân dung dịch (thứ tự khử ở cathode, oxi hóa ở anode); Tách kim loại (nhiệt luyện, thủy luyện, điện phân); Ăn mòn hóa học và ăn mòn điện hóa; Kim loại kiềm IA (Na, K), kiềm thổ IIA (Mg, Ca, Ba), nước cứng tạm thời/vĩnh cửu/toàn phần và cách làm mềm; Phức chất (nguyên tử trung tâm, phối tử, số phối trí)." }
+        ]
+      },
+      "Sinh học": {
+        "10": [
+          { title: "Toàn bộ Sinh học 10 (Kết nối tri thức)", summary: "Các phân tử sinh học (Carbohydrate, Lipid, Protein, DNA, RNA); Cấu trúc tế bào nhân sơ & nhân thực; Vận chuyển thụ động, chủ động, xuất nhập bào qua màng sinh chất; Enzyme & ATP; Hô hấp tế bào (đường phân, chu trình Krebs, chuỗi truyền electron) & Quang hợp (pha sáng, chu trình Calvin); Chu kì tế bào, nguyên phân, giảm phân; Vi sinh vật và Virus." }
+        ],
+        "11": [
+          { title: "Toàn bộ Sinh học 11 (Kết nối tri thức)", summary: "Trao đổi nước, khoáng, quang hợp C₃/C₄/CAM, hô hấp ở thực vật; Tiêu hóa, hô hấp, tuần hoàn (hệ tuần hoàn hở, kín, đơn, kép, chu kì tim), bài tiết & cân bằng nội môi ở động vật; Cảm ứng ở thực vật (hướng động, ứng động) & động vật (cung phản xạ, synapse); Sinh trưởng, phát triển & hormone thực vật/động vật; Sinh sản vô tính và hữu tính." }
+        ],
+        "12": [
+          { title: "Toàn bộ Sinh học 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Di truyền phân tử (Tái bản DNA bán bảo toàn, phiên mã mRNA, dịch mã ribosome, điều hòa Operon lac, đột biến gene); Di truyền NST (Quy luật Mendel, tương tác gene, liên kết & hoán vị gene, di truyền liên kết giới tính, di truyền ngoài nhân, đột biến NST); Di truyền quần thể (Cân bằng Hardy-Weinberg p²+2pq+q²=1) & Di truyền người; Tiến hóa (Darwin, thuyết tiến hóa tổng hợp hiện đại, 5 nhân tố tiến hóa, hình thành loài); Sinh thái học (Nhân tố sinh thái, quần thể, quần xã, hệ sinh thái, tháp sinh thái, chu trình sinh địa hóa)." }
+        ]
+      },
+      "Ngữ văn": {
+        "10": [
+          { title: "Toàn bộ Ngữ văn 10 (Kết nối tri thức)", summary: "Thần thoại & Sử thi (Đăm Săn); Thơ Đường luật & Thơ tự do (Nguyễn Trãi, Xuân Diệu); Văn bản nghị luận xã hội & văn học; Chèo & Tuồng dân gian; Truyện ngắn hiện đại; Văn bản thông tin tổng hợp." }
+        ],
+        "11": [
+          { title: "Toàn bộ Ngữ văn 11 (Kết nối tri thức)", summary: "Truyện ngắn & điểm nhìn trần thuật (Vợ nhặt, Chí Phèo); Thơ trữ tình có yếu tố tượng trưng; Văn bản nghị luận; Truyện thơ dân gian & thơ trữ tình; Bi kịch (Vũ Như Tô); Nguyễn Du & Truyện Kiều; Kí (Ai đã đặt tên cho dòng sông?); Văn bản thông tin." }
+        ],
+        "12": [
+          { title: "Toàn bộ Ngữ văn 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Tiểu thuyết hiện đại (Số đỏ - Vũ Trọng Phụng, Nỗi buồn chiến tranh); Thơ hiện đại & yếu tố tượng trưng, siêu thực (Tây Tiến, Đàn ghi ta của Lor-ca); Văn bản nghị luận; Yếu tố kì ảo trong truyện kể (Chuyện chức phán sự đền Tản Viên); Hài kịch (Hồn Trương Ba, da hàng thịt); Tác gia Hồ Chí Minh (Tuyên ngôn Độc lập); Tác phẩm kí & Văn bản thông tin. Định hướng cấu trúc đề Đọc hiểu ngữ liệu ngoài SGK + Viết đoạn/bài nghị luận." }
+        ]
+      },
+      "Tiếng Anh (Global Success)": {
+        "10": [
+          { title: "Toàn bộ Tiếng Anh 10 Global Success (KNTT)", summary: "Units 1–10: Family Life, Humans & Environment, Music, Better Community, Inventions, Gender Equality, International Organisations, New Ways to Learn, Protecting Environment, Ecotourism. Ngữ pháp: Present simple/continuous, Will/Be going to, Passive voice, Compound sentences, To-V/V-ing, Past simple/continuous, Present perfect, Comparatives/Superlatives, Relative clauses, Reported speech, Conditionals 1 & 2." }
+        ],
+        "11": [
+          { title: "Toàn bộ Tiếng Anh 11 Global Success (KNTT)", summary: "Units 1–10: Healthy Life, Generation Gap, Cities of the Future, ASEAN & Viet Nam, Global Warming, Preserving Heritage, Education Options, Becoming Independent, Social Issues, The Ecosystem. Ngữ pháp: Past simple vs Present perfect, Modals (must/have to/should), Stative/Linking verbs, Gerunds, Participle clauses, To-infinitive clauses, Perfect gerunds/participles, Cleft sentences, Linking words." }
+        ],
+        "12": [
+          { title: "Toàn bộ Tiếng Anh 12 Global Success (KNTT - Chuẩn thi 2026)", summary: "Units 1–10: Life Stories We Admire, A Multicultural World, Green Living, Urbanisation, The World of Work, Artificial Intelligence, Mass Media, Wildlife Conservation, Career Paths, Lifelong Learning. Ngữ pháp: Past simple/continuous, Articles, Verbs with prepositions & Relative clauses (which), Present perfect & Double comparatives, Sentence types, Active/Passive causatives, Adverbial clauses (manner/result/condition/comparison), 3-word phrasal verbs, Reported speech (orders/requests/advice)." }
+        ]
+      },
+      "Lịch sử": {
+        "10": [
+          { title: "Toàn bộ Lịch sử 10 (Kết nối tri thức)", summary: "Sử học & vai trò sử học; Các nền văn minh cổ - trung đại thế giới (Ai Cập, Trung Hoa, Ấn Độ, Hy Lạp - La Mã, Phục hưng); Cách mạng công nghiệp; Văn minh Đông Nam Á; Văn minh Văn Lang - Âu Lạc, Chăm-pa, Phù Nam, Đại Việt; Cộng đồng các dân tộc Việt Nam." }
+        ],
+        "11": [
+          { title: "Toàn bộ Lịch sử 11 (Kết nối tri thức)", summary: "Cách mạng tư sản & CNTB; CNXH từ 1917 đến nay; Giành độc lập dân tộc ở Đông Nam Á; Chiến tranh bảo vệ Tổ quốc & giải phóng dân tộc trước 1945; Các cuộc cải cách lớn (Hồ Quý Ly, Lê Thánh Tông, Minh Mạng); Lịch sử bảo vệ chủ quyền Việt Nam ở Biển Đông." }
+        ],
+        "12": [
+          { title: "Toàn bộ Lịch sử 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Liên Hợp Quốc & Trật tự thế giới trong và sau Chiến tranh lạnh (Ianta, đa cực); ASEAN từ 1967 đến nay; Cách mạng tháng Tám 1945, kháng chiến chống Pháp (1945–1954), kháng chiến chống Mỹ (1954–1975), bảo vệ biên giới Tây Nam, phía Bắc & Biển Đông (1975–nay); Công cuộc Đổi mới từ 1986; Hoạt động đối ngoại Việt Nam; Hồ Chí Minh trong lịch sử Việt Nam." }
+        ]
+      },
+      "Địa lí": {
+        "10": [
+          { title: "Toàn bộ Địa lí 10 (Kết nối tri thức)", summary: "Bản đồ; Trái Đất, Thạch quyển, Khí quyển, Thủy quyển, Sinh quyển; Quy luật địa đới và phi địa đới; Địa lí dân cư; Cơ cấu nền kinh tế, GDP/GNI; Địa lí nông nghiệp, công nghiệp, dịch vụ; Phát triển bền vững." }
+        ],
+        "11": [
+          { title: "Toàn bộ Địa lí 11 (Kết nối tri thức)", summary: "Các nhóm nước phát triển/đang phát triển, toàn cầu hóa, khu vực hóa, an ninh toàn cầu; Địa lí khu vực và quốc gia: Mỹ La-tinh, EU, Đông Nam Á, Tây Nam Á, Hoa Kỳ, Liên bang Nga, Nhật Bản, Trung Quốc, Ô-xtrây-li-a, Cộng hòa Nam Phi." }
+        ],
+        "12": [
+          { title: "Toàn bộ Địa lí 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Địa lí tự nhiên Việt Nam (Vị trí địa lí, thiên nhiên nhiệt đới ẩm gió mùa, phân hóa Bắc-Nam/Đông-Tây/độ cao, bảo vệ tài nguyên & môi trường); Địa lí dân cư (Dân số, lao động, đô thị hóa); Chuyển dịch cơ cấu kinh tế, nông-lâm-thủy sản, công nghiệp, dịch vụ; 7 vùng kinh tế (TDMN Bắc Bộ, ĐB sông Hồng, Bắc Trung Bộ, DH Nam Trung Bộ, Tây Nguyên, Đông Nam Bộ, ĐB sông Cửu Long) & Biển Đông, đảo, quần đảo." }
+        ]
+      },
+      "Giáo dục Kinh tế & Pháp luật": {
+        "10": [
+          { title: "Toàn bộ GDKT & PL 10 (Kết nối tri thức)", summary: "Hoạt động & chủ thể nền kinh tế, thị trường & cơ chế thị trường, ngân sách nhà nước & thuế, sản xuất kinh doanh & các mô hình doanh nghiệp, tín dụng, kế hoạch tài chính cá nhân; Hệ thống chính trị, pháp luật, thực hiện pháp luật (tuân thủ, thi hành, sử dụng, áp dụng), Hiến pháp 2013 & bộ máy nhà nước CHXHCN Việt Nam." }
+        ],
+        "11": [
+          { title: "Toàn bộ GDKT & PL 11 (Kết nối tri thức)", summary: "Cạnh tranh, cung – cầu, lạm phát, thất nghiệp, thị trường lao động & việc làm, ý tưởng & cơ hội kinh doanh, đạo đức kinh doanh, văn hóa tiêu dùng; Quyền bình đẳng trước pháp luật, bình đẳng giới, dân tộc, tôn giáo; Quyền tham gia quản lí nhà nước, bầu cử/ứng cử, khiếu nại/tố cáo, bảo vệ Tổ quốc, các quyền tự do cơ bản." }
+        ],
+        "12": [
+          { title: "Toàn bộ GDKT & PL 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Tăng trưởng và phát triển kinh tế (GDP, GNI, phát triển bền vững); Hội nhập kinh tế quốc tế (song phương, khu vực, toàn cầu); Bảo hiểm (BHXH, BHYT, BHTN, BH thương mại) & an sinh xã hội; Lập kế hoạch kinh doanh; Trách nhiệm xã hội của doanh nghiệp; Quản lí thu chi gia đình; Quyền & nghĩa vụ công dân về kinh tế, văn hóa, xã hội (hôn nhân gia đình, học tập, sức khỏe, môi trường); Pháp luật quốc tế." }
+        ]
+      },
+      "Tin học": {
+        "10": [
+          { title: "Toàn bộ Tin học 10 (Kết nối tri thức)", summary: "Thông tin & xử lí thông tin, hệ nhị phân; Mạng máy tính & Internet, an toàn thông tin; Đạo đức & pháp luật số; Thiết kế đồ họa (GIMP/Inkscape); Lập trình Python cơ bản (biến, rẽ nhánh if, vòng lặp for/while, danh sách list, hàm)." }
+        ],
+        "11": [
+          { title: "Toàn bộ Tin học 11 (Kết nối tri thức)", summary: "Hệ điều hành & phần mềm nguồn mở; Lưu trữ trực tuyến; Cơ sở dữ liệu quan hệ (bảng, khóa chính, khóa ngoài, liên kết bảng), hệ QTCSDL và ngôn ngữ truy vấn SQL (SELECT, FROM, WHERE, JOIN); Thuật toán & lập trình giải quyết bài toán." }
+        ],
+        "12": [
+          { title: "Toàn bộ Tin học 12 (Kết nối tri thức - Chuẩn thi 2026)", summary: "Trí tuệ nhân tạo (AI) và ứng dụng; Mạng máy tính & Internet (giao thức TCP/IP, địa chỉ IP, thiết bị mạng Switch/Router/Access Point); Tạo trang web với HTML và CSS (thẻ cấu trúc, bảng, biểu mẫu form, bộ chọn CSS, mô hình hộp Box Model); Định hướng nghề nghiệp ngành Tin học." }
+        ]
+      },
+      "Công nghệ Công nghiệp": {
+        "10": [
+          { title: "Toàn bộ Công nghệ 10 — Thiết kế và Công nghệ (KNTT)", summary: "Đại cương về công nghệ (bản chất, hệ thống kĩ thuật, công nghệ phổ biến, đánh giá công nghệ); Vẽ kĩ thuật cơ sở (tiêu chuẩn bản vẽ kĩ thuật, hình chiếu vuông góc, hình cắt, mặt cắt, hình chiếu trục đo, biểu diễn vật thể); Thiết kế kĩ thuật (quy trình thiết kế, yếu tố ảnh hưởng, nghề nghiệp thiết kế)." },
+          { title: "Chương I–II: Đại cương công nghệ & Vẽ kĩ thuật cơ sở", summary: "Hệ thống kĩ thuật (đầu vào, xử lí, đầu ra); Khổ giấy A0–A4, tỉ lệ, nét vẽ, ghi kích thước; Phương pháp chiếu góc thứ nhất (PPCG1), hình chiếu đứng/bằng/cạnh, hình cắt toàn bộ/một nửa/cục bộ, hình chiếu trục đo vuông góc đều & xiên góc cân." },
+          { title: "Chương III: Thiết kế kĩ thuật", summary: "Quy trình thiết kế kĩ thuật 5 bước (xác định vấn đề → đề xuất giải pháp → xây dựng nguyên mẫu → thử nghiệm & đánh giá → lập hồ sơ kĩ thuật); Các nguyên tắc tối ưu hóa và phát triển bền vững." }
+        ],
+        "11": [
+          { title: "Toàn bộ Công nghệ 11 — Công nghệ Cơ khí (KNTT)", summary: "Cơ khí chế tạo (vật liệu kim loại & phi kim loại, phương pháp gia công đúc, hàn, gia công cắt gọt tiện/phay/khoan, quy trình chế tạo cơ khí, sản xuất cơ khí tự động hóa & robot công nghiệp); Cơ khí động lực (động cơ đốt trong 4 kì và 2 kì, cơ cấu trục khuỷu thanh truyền, cơ cấu phân phối khí, hệ thống bôi trơn, làm mát, cung cấp nhiên liệu, khởi động; hệ thống truyền lực ô tô)." },
+          { title: "Phần I: Cơ khí chế tạo & Tự động hóa", summary: "Tính chất cơ học vật liệu (độ bền, độ dẻo, độ cứng); Gia công không phoi (đúc, rèn, hàn) và gia công có phoi (tiện, phay, bào, khoan); Dây chuyền sản xuất tự động và an toàn lao động cơ khí." },
+          { title: "Phần II: Động cơ đốt trong & Hệ thống truyền lực ô tô", summary: "Nguyên lí làm việc động cơ xăng và diesel 4 kì (nạp – nén – cháy giãn nở – thải), tỉ số nén ε = V_tp / V_bc; Hệ thống bôi trơn cưỡng bức, làm mát bằng nước, phun xăng điện tử EFI, đánh lửa điện tử; Li hợp, hộp số, truyền lực các-đăng, vi sai trên ô tô." }
+        ],
+        "12": [
+          { title: "Toàn bộ Công nghệ 12 — Công nghệ Điện – Điện tử (KNTT 2026)", summary: "Kĩ thuật điện: Mạch điện xoay chiều ba pha đối xứng (nối hình sao Y có dây trung tính: U_d = √3·U_p, I_d = I_p; nối hình tam giác Δ: U_d = U_p, I_d = √3·I_p; công suất P = √3·U_d·I_d·cos φ), hệ thống điện quốc gia, mạng điện sản xuất quy mô nhỏ và mạng điện hạ áp sinh hoạt, an toàn và tiết kiệm điện năng; Kĩ thuật điện tử: Linh kiện điện tử (điện trở R, tụ điện C, cuộn cảm L, diode chỉnh lưu/ổn áp Zener/LED, transistor lưỡng cực BJT, mạch tích hợp IC), khuếch đại thuật toán (Op-Amp đảo/không đảo), mạch điện tử số & cổng logic (AND, OR, NOT, NAND, NOR), vi điều khiển & lập trình ứng dụng." },
+          { title: "Phần I: Kĩ thuật Điện & Mạch điện xoay chiều 3 pha", summary: "Mạch ba pha nối sao Y (U_d = √3·U_p, I_d = I_p) và nối tam giác Δ (U_d = U_p, I_d = √3·I_p); Hệ thống truyền tải và phân phối điện năng quốc gia; Tính toán công suất tiêu thụ, lựa chọn dây dẫn, aptomat bảo vệ và biện pháp tiết kiệm điện." },
+          { title: "Phần II: Linh kiện Điện tử, Điện tử số & Vi điều khiển", summary: "Đọc trị số điện trở vòng màu, phân cực diode & transistor NPN/PNP; Bảng chân lí và biểu thức logic các cổng AND (Y = A·B), OR (Y = A + B), NOT (Y = Ā), NAND, NOR; Cấu trúc khối và ứng dụng vi điều khiển (Arduino/board mạch)." }
+        ]
+      },
+      "Công nghệ Nông nghiệp": {
+        "10": [
+          { title: "Toàn bộ Công nghệ 10 — Công nghệ Trồng trọt (KNTT)", summary: "Giới thiệu chung về trồng trọt; Đất trồng (thành phần phần rắn/lỏng/khí, keo đất và khả năng hấp phụ, độ phì nhiêu, phản ứng chua/kiềm/trung tính, biện pháp cải tạo đất chua/mặn/xói mòn, giá thể trồng cây); Phân bón (phân hóa học, phân hữu cơ, phân vi sinh, nguyên tắc bón phân hợp lí, bảo quản phân bón); Công nghệ giống cây trồng (chọn tạo giống, nhân giống hữu tính/vô tính, chiết/ghép/giâm cành, nuôi cấy mô tế bào thực vật); Phòng trừ sâu, bệnh hại cây trồng (biện pháp canh tác, cơ giới vật lí, sinh học, hóa học, quản lí dịch hại tổng hợp IPM); Kĩ thuật trồng trọt & Trồng trọt công nghệ cao (thủy canh, khí canh, nhà kính, tưới tự động); Bảo quản và chế biến sản phẩm trồng trọt." },
+          { title: "Chương I–III: Đất trồng, Giá thể & Phân bón", summary: "Keo đất âm và khả năng trao đổi ion dinh dưỡng; Cải tạo đất chua bằng bón vôi CaO/CaCO₃, rửa mặn; Phân đạm (N), lân (P₂O₅), kali (K₂O), NPK, phân hữu cơ vi sinh và nguyên tắc 4 đúng khi bón phân." },
+          { title: "Chương IV–VII: Giống cây trồng, Phòng trừ sâu bệnh & Công nghệ cao", summary: "Nhân giống in vitro (nuôi cấy mô tế bào); Nguyên tắc phòng trừ tổng hợp IPM; Hệ thống trồng cây thủy canh hồi lưu/không hồi lưu, khí canh, bảo quản lạnh và chế biến nông sản." }
+        ],
+        "11": [
+          { title: "Toàn bộ Công nghệ 11 — Công nghệ Chăn nuôi (KNTT)", summary: "Giới thiệu chung về chăn nuôi; Công nghệ giống vật nuôi (khái niệm giống, chọn lọc cá thể/tổ tiên/đời sau, nhân giống thuần chủng, lai kinh tế/lai cải tạo/lai gây thành, ứng dụng công nghệ sinh học: thụ tinh nhân tạo, cấy truyền phôi, xác định giới tính phôi); Công nghệ thức ăn chăn nuôi (nhu cầu dinh dưỡng protein/năng lượng/khoáng/vitamin, thức ăn tinh/thô xanh/bổ sung, chế biến ủ chua/kiềm hóa và bảo quản thức ăn, ứng dụng vi sinh/enzyme); Phòng, trị bệnh cho vật nuôi (nguyên tắc an toàn sinh học, vaccine phòng bệnh, kháng sinh và hạn chế kháng kháng sinh, bệnh dịch tả lợn cổ điển/châu Phi, cúm gia cầm, lở mồm long móng); Công nghệ chăn nuôi (chuồng trại, quy trình VietGAHP, chăn nuôi công nghệ cao tự động hóa); Bảo vệ môi trường trong chăn nuôi (xử lí chất thải biogas, đệm lót sinh học)." },
+          { title: "Chương I–III: Giống vật nuôi & Công nghệ Thức ăn chăn nuôi", summary: "Ưu thế lai F₁ trong lai kinh tế; Quy trình thụ tinh nhân tạo và cấy truyền phôi; Thành phần dinh dưỡng thức ăn chăn nuôi, phương pháp ủ chua thức ăn xanh và sản xuất thức ăn hỗn hợp hoàn chỉnh." },
+          { title: "Chương IV–VI: Phòng trị bệnh, Chăn nuôi VietGAHP & Môi trường", summary: "Cơ chế tạo miễn dịch chủ động của vaccine; Tiêu chuẩn chăn nuôi an toàn sinh học VietGAHP; Hệ thống hầm khí sinh học Biogas và đệm lót sinh học xử lí chất thải chăn nuôi." }
+        ],
+        "12": [
+          { title: "Toàn bộ Công nghệ 12 — Công nghệ Lâm nghiệp – Thủy sản (KNTT 2026)", summary: "Phần I — Công nghệ Lâm nghiệp: Vai trò, triển vọng lâm nghiệp; Sinh trưởng và phát triển của rừng (các giai đoạn sinh trưởng cây rừng, quy luật sinh trưởng); Trồng và chăm sóc rừng (sản xuất cây giống lâm nghiệp, kĩ thuật trồng rừng, chăm sóc và nuôi dưỡng rừng); Bảo vệ và khai thác tài nguyên rừng bền vững (phòng chống cháy rừng, sâu bệnh hại rừng, khai thác trắng/chọn/dần, chứng chỉ rừng bền vững FSC). Phần II — Công nghệ Thủy sản: Vai trò, triển vọng thủy sản; Môi trường nuôi thủy sản (chỉ tiêu lí học: nhiệt độ, độ trong, độ mặn; hóa học: pH 6,5–8,5, oxy hòa tan DO ≥ 4–5 mg/L, NH₃, H₂S; sinh học: thực vật/động vật phù du; biện pháp quản lí và xử lí nước ao nuôi); Công nghệ giống thủy sản (chọn tạo, sinh sản nhân tạo cá/tôm); Công nghệ thức ăn thủy sản (thức ăn tự nhiên, thức ăn công nghiệp viên nổi/chìm, bảo quản thức ăn); Công nghệ nuôi thủy sản (nuôi ao đất, nuôi lồng bè trên biển/sông, hệ thống tuần hoàn RAS, tiêu chuẩn VietGAP); Phòng, trị bệnh thủy sản; Bảo vệ và khai thác nguồn lợi thủy sản bền vững." },
+          { title: "Phần I: Công nghệ Lâm nghiệp (Trồng, Chăm sóc & Bảo vệ rừng)", summary: "4 giai đoạn sinh trưởng phát triển cây rừng (non – sào – trung niên – thành thục và già cỗi); Kĩ thuật trồng rừng bằng cây con có bầu/rễ trần; Khai thác rừng bền vững theo tiêu chuẩn FSC." },
+          { title: "Phần II: Công nghệ Thủy sản (Môi trường nước, Giống, Nuôi RAS & VietGAP)", summary: "Quản lí các yếu tố thủy lí – thủy hóa (nhiệt độ, độ mặn, pH, oxy hòa tan DO, khí độc NH₃/H₂S); Công nghệ biofloc và hệ thống nuôi tuần hoàn RAS; Quy trình nuôi thủy sản sạch VietGAP và bảo vệ nguồn lợi thủy sản." }
+        ]
+      }
+    };
+
+    // Tạo Icon PNG & Web Manifest động cho PWA
+    (function setupPwaAssets() {
+      try {
+        const iconCanvas = document.createElement('canvas');
+        iconCanvas.width = 512;
+        iconCanvas.height = 512;
+        const ctx = iconCanvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, '#1e3a8a');
+        grad.addColorStop(1, '#2563eb');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
+        ctx.font = '260px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🎓', 256, 268);
+
+        const pngIconUrl = iconCanvas.toDataURL('image/png');
+        document.getElementById('appIconLink').href = pngIconUrl;
+        document.getElementById('appleTouchIconLink').href = pngIconUrl;
+
+        const manifestObj = {
+          name: 'EduCare AI 360° — Kết Nối Tri Thức & Giải Đề',
+          short_name: 'EduCare AI',
+          start_url: window.location.href,
+          display: 'standalone',
+          background_color: '#0f172a',
+          theme_color: '#0f172a',
+          icons: [{ src: pngIconUrl, sizes: '512x512', type: 'image/png' }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+        document.getElementById('manifestLink').href = URL.createObjectURL(manifestBlob);
+      } catch (e) {}
+
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      if (isStandalone || localStorage.getItem('educare_hide_install') === '1') {
+        document.getElementById('installBanner').style.display = 'none';
+      }
+    })();
+
+    if (typeof mermaid !== 'undefined') {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        flowchart: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          curve: 'basis',
+          nodeSpacing: 26,
+          rankSpacing: 52
+        },
+        themeVariables: {
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          fontSize: '15px',
+          lineColor: '#64748b'
+        }
+      });
+    }
+
+    let currentFontSize = 16;
+    let createImages = [];
+    let solverImages = [];
+    let createDocs = [];
+    let solverDocs = [];
+    let currentAbortController = null;
+    let mindmapScale = 1.0;
+
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    }
+
+    // Nén ảnh: Turbo 440px cho học bài, HD 920px cho giải bài tập Toán/Lý/Hóa/Sinh
+    function compressSingleFile(file, isHighRes) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Không đọc được ảnh'));
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onerror = () => reject(new Error('Định dạng ảnh không hợp lệ'));
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxWidth = isHighRes ? 920 : 440;
+            const quality = isHighRes ? 0.72 : 0.46;
+            const scale = Math.min(1, maxWidth / img.width);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            const b64 = compressedDataUrl.split(',')[1];
+            const sizeKb = Math.round((b64.length * 3) / 4 / 1024);
+            resolve({
+              dataUrl: compressedDataUrl,
+              base64: b64,
+              mimeType: 'image/jpeg',
+              kb: sizeKb
+            });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function compressDataUrlImage(dataUrl, isHighRes) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('Không đọc được ảnh nhúng trong tài liệu'));
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxWidth = isHighRes ? 920 : 440;
+          const quality = isHighRes ? 0.72 : 0.46;
+          const scale = Math.min(1, maxWidth / img.width);
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const outUrl = canvas.toDataURL('image/jpeg', quality);
+          const b64 = outUrl.split(',')[1];
+          resolve({
+            dataUrl: outUrl,
+            base64: b64,
+            mimeType: 'image/jpeg',
+            kb: Math.round((b64.length * 3) / 4 / 1024)
+          });
+        };
+        img.src = dataUrl;
+      });
+    }
+
+    function createDocPlaceholderImage(subjectLabel, docTitle) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 480;
+      canvas.height = 240;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, 480, 240);
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.fillText('EDUCARE AI 360 - TAI LIEU', 24, 52);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '16px sans-serif';
+      ctx.fillText((subjectLabel || '').slice(0, 44), 24, 96);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '14px sans-serif';
+      ctx.fillText((docTitle || '').slice(0, 48), 24, 136);
+      const url = canvas.toDataURL('image/jpeg', 0.6);
+      const b64 = url.split(',')[1];
+      return { base64: b64, mimeType: 'image/jpeg' };
+    }
+
+    function getDocBadgeIcon(ext) {
+      if (ext === 'docx' || ext === 'doc' || ext === 'odt' || ext === 'rtf') return '📘';
+      if (ext === 'pptx' || ext === 'ppt' || ext === 'odp') return '📙';
+      if (ext === 'pdf') return '📕';
+      if (ext === 'xlsx' || ext === 'xls' || ext === 'csv' || ext === 'ods') return '📗';
+      return '📄';
+    }
+
+    function extractBinaryOfficeFallback(arrayBuffer) {
+      const bytes = new Uint8Array(arrayBuffer);
+      // Thử trích xuất chuỗi UTF-16LE (đặc trưng của .doc/.ppt cũ) và chuỗi UTF-8/ASCII
+      let utf16Chunks = [];
+      let curr = '';
+      for (let i = 0; i + 1 < bytes.length; i += 2) {
+        const code = bytes[i] | (bytes[i + 1] << 8);
+        const isPrintable = (code >= 32 && code <= 126) || (code >= 192 && code <= 7929) || code === 10 || code === 13 || code === 9;
+        if (isPrintable) {
+          curr += String.fromCharCode(code);
+        } else {
+          if (curr.trim().length >= 8) utf16Chunks.push(curr.trim());
+          curr = '';
+        }
+      }
+      if (curr.trim().length >= 8) utf16Chunks.push(curr.trim());
+
+      const cleaned = utf16Chunks
+        .filter(s => /[A-Za-zÀ-ỹ0-9]{3,}/.test(s) && !/^(Root Entry|WordDocument|PowerPoint Document|SummaryInformation|Microsoft)/.test(s))
+        .join('\n');
+      return cleaned.trim();
+    }
+
+    function decodeRtfToText(rtf) {
+      let text = rtf
+        .replace(/\\par[d]?/g, '\n')
+        .replace(/\\line/g, '\n')
+        .replace(/\\tab/g, '\t')
+        .replace(/\\u(-?\d+)\??/g, (_, num) => {
+          let code = parseInt(num, 10);
+          if (code < 0) code += 65536;
+          return String.fromCharCode(code);
+        })
+        .replace(/\\'([0-9a-fA-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+        .replace(/\{\\\*\\[^{}]+\}/g, '')
+        .replace(/\\[a-zA-Z]+-?\d* ?/g, '')
+        .replace(/[{}]/g, '');
+      return text.replace(/\n{3,}/g, '\n\n').trim();
+    }
+
+    async function extractEmbeddedZipImages(zip, folderPrefix, target) {
+      const listRef = target === 'create' ? createImages : solverImages;
+      const isHighRes = target === 'solver';
+      const mediaNames = Object.keys(zip.files)
+        .filter(name => name.startsWith(folderPrefix) && /\.(png|jpe?g|webp)$/i.test(name))
+        .sort();
+
+      let added = 0;
+      for (const mName of mediaNames) {
+        if (listRef.length >= MAX_IMAGES) break;
+        try {
+          const ext = mName.split('.').pop().toLowerCase();
+          const mime = ext === 'png' ? 'image/png' : (ext === 'webp' ? 'image/webp' : 'image/jpeg');
+          const b64 = await zip.files[mName].async('base64');
+          const compressed = await compressDataUrlImage(`data:${mime};base64,${b64}`, isHighRes);
+          listRef.push(compressed);
+          added++;
+        } catch (e) {}
+      }
+      return added;
+    }
+
+    async function parseDocxFile(arrayBuffer, target) {
+      if (typeof JSZip === 'undefined') {
+        throw new Error('Thư viện đọc .DOCX chưa tải xong, vui lòng kiểm tra mạng và tải lại trang.');
+      }
+      const zip = await JSZip.loadAsync(arrayBuffer);
+      const xmlTargets = ['word/document.xml', 'word/footnotes.xml', 'word/endnotes.xml'].filter(p => zip.files[p]);
+      if (xmlTargets.length === 0) {
+        throw new Error('Tệp .DOCX không hợp lệ hoặc bị mã hóa mật khẩu.');
+      }
+
+      const parser = new DOMParser();
+      let sections = [];
+
+      for (const xmlPath of xmlTargets) {
+        const xmlStr = await zip.files[xmlPath].async('string');
+        const doc = parser.parseFromString(xmlStr, 'application/xml');
+        const paragraphs = Array.from(doc.getElementsByTagName('*')).filter(el => el.localName === 'p');
+        let lines = [];
+        for (const p of paragraphs) {
+          let lineText = '';
+          const walk = (node) => {
+            if (!node) return;
+            if (node.localName === 't') {
+              lineText += node.textContent || '';
+            } else if (node.localName === 'tab') {
+              lineText += '  ';
+            } else if (node.localName === 'br' || node.localName === 'cr') {
+              lineText += '\n';
+            }
+            for (const child of Array.from(node.childNodes || [])) {
+              walk(child);
+            }
+          };
+          walk(p);
+          if (lineText.trim()) lines.push(lineText.trim());
+        }
+        if (lines.length > 0) sections.push(lines.join('\n'));
+      }
+
+      const embeddedImgCount = await extractEmbeddedZipImages(zip, 'word/media/', target);
+      return {
+        text: sections.join('\n\n').trim(),
+        detail: embeddedImgCount > 0 ? `Word DOCX (+${embeddedImgCount} hình công thức)` : 'Word DOCX'
+      };
+    }
+
+    async function parsePptxFile(arrayBuffer, target) {
+      if (typeof JSZip === 'undefined') {
+        throw new Error('Thư viện đọc .PPTX chưa tải xong, vui lòng kiểm tra mạng và tải lại trang.');
+      }
+      const zip = await JSZip.loadAsync(arrayBuffer);
+      const slideFiles = Object.keys(zip.files)
+        .filter(name => /^ppt\/slides\/slide\d+\.xml$/i.test(name))
+        .sort((a, b) => {
+          const na = parseInt(a.match(/slide(\d+)\.xml/i)[1], 10);
+          const nb = parseInt(b.match(/slide(\d+)\.xml/i)[1], 10);
+          return na - nb;
+        });
+
+      if (slideFiles.length === 0) {
+        throw new Error('Không tìm thấy slide nào trong tệp .PPTX.');
+      }
+
+      const parser = new DOMParser();
+      let slidesText = [];
+
+      for (let idx = 0; idx < slideFiles.length; idx++) {
+        const xmlStr = await zip.files[slideFiles[idx]].async('string');
+        const doc = parser.parseFromString(xmlStr, 'application/xml');
+        const paragraphs = Array.from(doc.getElementsByTagName('*')).filter(el => el.localName === 'p');
+        let pLines = [];
+        for (const p of paragraphs) {
+          const runs = Array.from(p.getElementsByTagName('*')).filter(el => el.localName === 't');
+          const txt = runs.map(r => r.textContent || '').join('').trim();
+          if (txt) pLines.push(txt);
+        }
+        if (pLines.length > 0) {
+          slidesText.push(`[Slide ${idx + 1}]\n${pLines.join('\n')}`);
+        }
+      }
+
+      const embeddedImgCount = await extractEmbeddedZipImages(zip, 'ppt/media/', target);
+      return {
+        text: slidesText.join('\n\n').trim(),
+        detail: `${slideFiles.length} slides PPTX${embeddedImgCount > 0 ? ` (+${embeddedImgCount} ảnh)` : ''}`
+      };
+    }
+
+    async function parseXlsxFile(arrayBuffer) {
+      if (typeof JSZip === 'undefined') {
+        throw new Error('Thư viện đọc .XLSX chưa tải xong.');
+      }
+      const zip = await JSZip.loadAsync(arrayBuffer);
+      const parser = new DOMParser();
+
+      let sharedStrings = [];
+      if (zip.files['xl/sharedStrings.xml']) {
+        const ssXml = await zip.files['xl/sharedStrings.xml'].async('string');
+        const ssDoc = parser.parseFromString(ssXml, 'application/xml');
+        const siNodes = Array.from(ssDoc.getElementsByTagName('*')).filter(el => el.localName === 'si');
+        sharedStrings = siNodes.map(si => {
+          const tNodes = Array.from(si.getElementsByTagName('*')).filter(el => el.localName === 't');
+          return tNodes.map(t => t.textContent || '').join('');
+        });
+      }
+
+      const sheetFiles = Object.keys(zip.files)
+        .filter(name => /^xl\/worksheets\/sheet\d+\.xml$/i.test(name))
+        .sort();
+
+      let allSheetsText = [];
+      for (let sIdx = 0; sIdx < sheetFiles.length; sIdx++) {
+        const shXml = await zip.files[sheetFiles[sIdx]].async('string');
+        const shDoc = parser.parseFromString(shXml, 'application/xml');
+        const rows = Array.from(shDoc.getElementsByTagName('*')).filter(el => el.localName === 'row');
+        let rowLines = [];
+        for (const r of rows) {
+          const cells = Array.from(r.getElementsByTagName('*')).filter(el => el.localName === 'c');
+          let vals = [];
+          for (const c of cells) {
+            const type = c.getAttribute('t');
+            const vNode = Array.from(c.getElementsByTagName('*')).find(el => el.localName === 'v');
+            const isNode = Array.from(c.getElementsByTagName('*')).find(el => el.localName === 't');
+            let val = '';
+            if (type === 's' && vNode) {
+              val = sharedStrings[parseInt(vNode.textContent, 10)] || '';
+            } else if (isNode) {
+              val = isNode.textContent || '';
+            } else if (vNode) {
+              val = vNode.textContent || '';
+            }
+            if (val.trim()) vals.push(val.trim());
+          }
+          if (vals.length > 0) rowLines.push(vals.join(' | '));
+        }
+        if (rowLines.length > 0) {
+          allSheetsText.push(`[Bảng ${sIdx + 1}]\n${rowLines.join('\n')}`);
+        }
+      }
+
+      return {
+        text: allSheetsText.join('\n\n').trim(),
+        detail: `${sheetFiles.length} trang tính XLSX`
+      };
+    }
+
+    async function parseOpenDocFile(arrayBuffer, ext) {
+      if (typeof JSZip === 'undefined') throw new Error('Thư viện giải nén chưa sẵn sàng.');
+      const zip = await JSZip.loadAsync(arrayBuffer);
+      if (!zip.files['content.xml']) throw new Error('Tệp không có content.xml.');
+      const xmlStr = await zip.files['content.xml'].async('string');
+      const doc = new DOMParser().parseFromString(xmlStr, 'application/xml');
+      const pNodes = Array.from(doc.getElementsByTagName('*')).filter(el => el.localName === 'p');
+      const lines = pNodes.map(p => (p.textContent || '').trim()).filter(Boolean);
+      return { text: lines.join('\n'), detail: `Tài liệu ${ext.toUpperCase()}` };
+    }
+
+    async function parsePdfFile(arrayBuffer, target) {
+      if (typeof pdfjsLib === 'undefined') {
+        throw new Error('Thư viện đọc .PDF chưa tải xong, vui lòng kiểm tra mạng.');
+      }
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let pagesText = [];
+      for (let p = 1; p <= pdf.numPages; p++) {
+        const page = await pdf.getPage(p);
+        const content = await page.getTextContent();
+        let lastY = null;
+        let pageLine = '';
+        for (const item of content.items) {
+          const y = item.transform ? item.transform[5] : null;
+          if (lastY !== null && y !== null && Math.abs(y - lastY) > 6) {
+            pageLine += '\n';
+          } else if (pageLine && !pageLine.endsWith(' ') && !pageLine.endsWith('\n')) {
+            pageLine += ' ';
+          }
+          pageLine += item.str || '';
+          lastY = y;
+        }
+        if (pageLine.trim()) {
+          pagesText.push(`[Trang ${p}]\n${pageLine.trim()}`);
+        }
+      }
+
+      const fullText = pagesText.join('\n\n').trim();
+      let renderedPages = 0;
+
+      // Nếu PDF là bản scan ảnh (ít chữ), tự động chụp từng trang PDF sang ảnh để AI đọc bằng Vision!
+      if (fullText.length < 90) {
+        const listRef = target === 'create' ? createImages : solverImages;
+        const isHighRes = target === 'solver';
+        const maxRender = Math.min(pdf.numPages, MAX_IMAGES - listRef.length);
+        for (let p = 1; p <= maxRender; p++) {
+          const page = await pdf.getPage(p);
+          const viewport = page.getViewport({ scale: isHighRes ? 1.6 : 1.0 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const compressed = await compressDataUrlImage(canvas.toDataURL('image/jpeg', 0.72), isHighRes);
+          listRef.push(compressed);
+          renderedPages++;
+        }
+      }
+
+      return {
+        text: fullText,
+        detail: renderedPages > 0
+          ? `PDF Scan (${pdf.numPages} trang → đã chuyển ${renderedPages} trang sang ảnh HD)`
+          : `PDF (${pdf.numPages} trang)`
+      };
+    }
+
+    async function extractDocumentFile(file, target) {
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      const sizeKb = Math.max(1, Math.round(file.size / 1024));
+
+      if (ext === 'docx') {
+        const buf = await file.arrayBuffer();
+        const res = await parseDocxFile(buf, target);
+        return { name: file.name, ext, sizeKb, text: res.text, detail: res.detail };
+      }
+      if (ext === 'pptx') {
+        const buf = await file.arrayBuffer();
+        const res = await parsePptxFile(buf, target);
+        return { name: file.name, ext, sizeKb, text: res.text, detail: res.detail };
+      }
+      if (ext === 'xlsx') {
+        const buf = await file.arrayBuffer();
+        const res = await parseXlsxFile(buf);
+        return { name: file.name, ext, sizeKb, text: res.text, detail: res.detail };
+      }
+      if (ext === 'odt' || ext === 'odp' || ext === 'ods') {
+        const buf = await file.arrayBuffer();
+        const res = await parseOpenDocFile(buf, ext);
+        return { name: file.name, ext, sizeKb, text: res.text, detail: res.detail };
+      }
+      if (ext === 'pdf') {
+        const buf = await file.arrayBuffer();
+        const res = await parsePdfFile(buf, target);
+        return { name: file.name, ext, sizeKb, text: res.text, detail: res.detail };
+      }
+      if (ext === 'doc' || ext === 'ppt' || ext === 'xls') {
+        const buf = await file.arrayBuffer();
+        const recovered = extractBinaryOfficeFallback(buf);
+        return {
+          name: file.name,
+          ext,
+          sizeKb,
+          text: recovered,
+          detail: recovered.length > 40
+            ? `Định dạng ${ext.toUpperCase()} cũ (đã khôi phục ${recovered.length} ký tự)`
+            : `Định dạng ${ext.toUpperCase()} nhị phân cũ (nên lưu sang .${ext}x hoặc .pdf để đủ 100%)`
+        };
+      }
+
+      // Văn bản thuần: .txt, .md, .csv, .json, .html, .htm, .xml, .rtf
+      const rawText = await file.text();
+      let cleanText = rawText;
+      if (ext === 'rtf') {
+        cleanText = decodeRtfToText(rawText);
+      } else if (ext === 'html' || ext === 'htm' || ext === 'xml') {
+        const doc = new DOMParser().parseFromString(rawText, 'text/html');
+        cleanText = (doc.body ? doc.body.innerText : doc.documentElement.textContent || '').trim();
+      } else if (ext === 'json') {
+        try {
+          const parsed = JSON.parse(rawText);
+          cleanText = JSON.stringify(parsed, null, 2);
+        } catch (e) {
+          cleanText = rawText;
+        }
+      }
+
+      return {
+        name: file.name,
+        ext,
+        sizeKb,
+        text: cleanText.trim(),
+        detail: `Tệp ${ext.toUpperCase()}`
+      };
+    }
+
+    async function handleMixedFiles(event, target) {
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+
+      const imgListRef = target === 'create' ? createImages : solverImages;
+      const docListRef = target === 'create' ? createDocs : solverDocs;
+      const hintEl = document.getElementById(target === 'create' ? 'uploadHint' : 'solverUploadHint');
+      const oldHint = hintEl.textContent;
+      hintEl.textContent = `⏳ Đang đọc và trích xuất ${files.length} tệp...`;
+
+      try {
+        for (const file of files) {
+          const isImg = (file.type && file.type.startsWith('image/')) || /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(file.name);
+          if (isImg) {
+            if (imgListRef.length >= MAX_IMAGES) {
+              alert(`Đã đạt giới hạn tối đa ${MAX_IMAGES} ảnh.`);
+              continue;
+            }
+            const compressed = await compressSingleFile(file, target === 'solver');
+            imgListRef.push(compressed);
+          } else {
+            const docObj = await extractDocumentFile(file, target);
+            if (!docObj.text && imgListRef.length === 0) {
+              alert(`Tệp "${file.name}" không có văn bản đọc được (có thể là định dạng .doc/.ppt cũ hoặc tệp trống). Bạn hãy lưu tệp sang .docx, .pptx hoặc .pdf nhé!`);
+            } else {
+              docListRef.push(docObj);
+            }
+          }
+        }
+      } catch (err) {
+        alert("Lỗi khi đọc tệp: " + err.message);
+      } finally {
+        hintEl.textContent = oldHint;
+        event.target.value = "";
+        renderDocsList(target);
+        renderImagePreviews(target);
+      }
+    }
+
+    function renderDocsList(target) {
+      const docListRef = target === 'create' ? createDocs : solverDocs;
+      const wrapper = document.getElementById(target === 'create' ? 'createDocsWrapper' : 'solverDocsWrapper');
+      const listEl = document.getElementById(target === 'create' ? 'createDocsList' : 'solverDocsList');
+      const countText = document.getElementById(target === 'create' ? 'createDocCountText' : 'solverDocCountText');
+
+      if (docListRef.length === 0) {
+        wrapper.style.display = 'none';
+        listEl.innerHTML = '';
+        return;
+      }
+
+      const totalChars = docListRef.reduce((s, d) => s + (d.text ? d.text.length : 0), 0);
+      wrapper.style.display = 'block';
+      countText.textContent = `Đã nạp ${docListRef.length} tệp tài liệu (${totalChars.toLocaleString('vi-VN')} ký tự)`;
+      listEl.innerHTML = '';
+
+      docListRef.forEach((doc, idx) => {
+        const card = document.createElement('div');
+        card.className = `doc-item-card ${target === 'solver' ? 'solver-doc' : ''}`;
+        const previewId = `${target}_doc_prev_${idx}`;
+        const icon = getDocBadgeIcon(doc.ext);
+        const charLabel = doc.text ? `${doc.text.length.toLocaleString('vi-VN')} ký tự` : 'Đã chuyển sang ảnh';
+
+        card.innerHTML = `
+          <div class="doc-item-top">
+            <div class="doc-item-info">
+              <div class="doc-item-name">${icon} ${doc.name}</div>
+              <div class="doc-item-meta">${doc.detail} • ${doc.sizeKb} KB • ${charLabel}</div>
+            </div>
+            <div class="doc-item-actions">
+              ${doc.text ? `<button type="button" class="btn-doc-view" onclick="toggleDocPreview('${previewId}')">👁️ Xem</button>` : ''}
+              <button type="button" class="btn-doc-del" onclick="removeSingleDoc('${target}', ${idx})">✕</button>
+            </div>
+          </div>
+          ${doc.text ? `<div id="${previewId}" class="doc-extracted-preview"></div>` : ''}
+        `;
+        listEl.appendChild(card);
+        if (doc.text) {
+          document.getElementById(previewId).textContent = doc.text;
+        }
+      });
+    }
+
+    function toggleDocPreview(previewId) {
+      const el = document.getElementById(previewId);
+      if (!el) return;
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function removeSingleDoc(target, idx) {
+      const docListRef = target === 'create' ? createDocs : solverDocs;
+      docListRef.splice(idx, 1);
+      renderDocsList(target);
+    }
+
+    function clearAllDocs(target) {
+      if (target === 'create') createDocs = [];
+      else solverDocs = [];
+      renderDocsList(target);
+    }
+
+    function renderImagePreviews(target) {
+      const listRef = target === 'create' ? createImages : solverImages;
+      const wrapper = document.getElementById(target === 'create' ? 'previewWrapper' : 'solverPreviewWrapper');
+      const grid = document.getElementById(target === 'create' ? 'previewGrid' : 'solverPreviewGrid');
+      const countText = document.getElementById(target === 'create' ? 'imageCountText' : 'solverImageCountText');
+
+      if (listRef.length === 0) {
+        wrapper.style.display = 'none';
+        grid.innerHTML = '';
+        return;
+      }
+
+      const totalKb = listRef.reduce((sum, item) => sum + item.kb, 0);
+      wrapper.style.display = 'block';
+      countText.textContent = `Đã chọn ${listRef.length}/${MAX_IMAGES} ảnh (~${totalKb} KB)`;
+      grid.innerHTML = '';
+
+      listRef.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'preview-item';
+        div.innerHTML = `
+          <img src="${item.dataUrl}" alt="Ảnh ${index + 1}" />
+          <span class="img-badge">Trang ${index + 1}</span>
+          <button type="button" class="remove-img-btn" onclick="removeSingleImage('${target}', ${index})">✕</button>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    function removeSingleImage(target, index) {
+      const listRef = target === 'create' ? createImages : solverImages;
+      listRef.splice(index, 1);
+      renderImagePreviews(target);
+    }
+
+    function clearAllImages(target) {
+      if (target === 'create') createImages = [];
+      else solverImages = [];
+      renderImagePreviews(target);
+    }
+
+    function cancelAnalysis() {
+      if (currentAbortController) currentAbortController.abort();
+    }
+
+    function buildColorfulMindmapCode(rawCode) {
+      let cleaned = (rawCode || '')
+        .replace(/```mermaid/gi, '')
+        .replace(/```/g, '')
+        .replace(/\\n/g, '\n')
+        .trim();
+
+      cleaned = cleaned.replace(/^(flowchart|graph)\s+(TD|TB|BT|RL)/i, 'flowchart LR');
+      if (!/^flowchart\s+LR/i.test(cleaned)) {
+        cleaned = 'flowchart LR\n' + cleaned;
+      }
+
+      const lines = cleaned.split('\n').filter(line => {
+        const t = line.trim();
+        return t && !t.startsWith('classDef ') && !t.startsWith('class ') && !t.startsWith('style ');
+      });
+
+      const childrenMap = {};
+      let rootNode = null;
+      const edgeRegex = /^\s*([A-Za-z0-9_]+)(?:\s*(?:\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}))?\s*[-=.]+>+\s*(?:\|[^\|]*\|\s*)?([A-Za-z0-9_]+)/;
+
+      for (const line of lines) {
+        const match = line.match(edgeRegex);
+        if (match) {
+          const from = match[1];
+          const to = match[2];
+          if (!rootNode) rootNode = from;
+          if (!childrenMap[from]) childrenMap[from] = [];
+          if (!childrenMap[from].includes(to)) childrenMap[from].push(to);
+        }
+      }
+
+      const baseGraph = lines.join('\n');
+      if (!rootNode || !childrenMap[rootNode]) {
+        return { styledGraph: baseGraph, plainGraph: baseGraph };
+      }
+
+      const palettes = [
+        'fill:#dcfce7,stroke:#16a34a,color:#14532d,stroke-width:2px',
+        'fill:#fef3c7,stroke:#d97706,color:#78350f,stroke-width:2px',
+        'fill:#ede9fe,stroke:#7c3aed,color:#4c1d95,stroke-width:2px',
+        'fill:#ffe4e6,stroke:#e11d48,color:#881337,stroke-width:2px',
+        'fill:#cffafe,stroke:#0891b2,color:#164e63,stroke-width:2px',
+        'fill:#ffedd5,stroke:#ea580c,color:#7c2d12,stroke-width:2px'
+      ];
+
+      let styleLines = [
+        'classDef rootCls fill:#1d4ed8,stroke:#1e3a8a,color:#ffffff,stroke-width:3px,font-weight:bold;'
+      ];
+      palettes.forEach((p, idx) => styleLines.push(`classDef b${idx}Cls ${p};`));
+      styleLines.push(`class ${rootNode} rootCls;`);
+
+      const topBranches = childrenMap[rootNode];
+      topBranches.forEach((branchId, idx) => {
+        const visited = new Set();
+        const queue = [branchId];
+        while (queue.length > 0) {
+          const curr = queue.shift();
+          if (!visited.has(curr)) {
+            visited.add(curr);
+            (childrenMap[curr] || []).forEach(child => queue.push(child));
+          }
+        }
+        const nodeList = Array.from(visited).join(',');
+        styleLines.push(`class ${nodeList} b${idx % palettes.length}Cls;`);
+      });
+
+      return {
+        styledGraph: baseGraph + '\n' + styleLines.join('\n'),
+        plainGraph: baseGraph
+      };
+    }
+
+    // =========================================================================
+    // LUỒNG HỌC BÀI MỚI (SƠ ĐỒ + FLASHCARD + PODCAST + 18 CÂU TRẮC NGHIỆM)
+    // =========================================================================
+    async function processLesson() {
+      const userRag = document.getElementById('ragInput').value.trim();
+      const docsCombined = createDocs
+        .filter(d => d.text)
+        .map(d => `=== TỆP: ${d.name} ===\n${d.text}`)
+        .join('\n\n');
+
+      if (createImages.length === 0 && !docsCombined && !userRag) {
+        alert("Vui lòng tải tệp (.DOCX, .PPTX, .PDF, .XLSX, .TXT), chọn ảnh trang sách, hoặc nhập nội dung bài học trước!");
+        return;
+      }
+
+      const btn = document.getElementById('analyzeBtn');
+      const loading = document.getElementById('loadingBox');
+      const loadingText = document.getElementById('loadingText');
+      const speedBadge = document.getElementById('speedStatusBadge');
+      btn.disabled = true;
+      loading.style.display = 'block';
+      stopPodcast();
+
+      const startTime = Date.now();
+      let seconds = 0;
+      const totalImgs = createImages.length;
+      const totalDocs = createDocs.length;
+
+      function updateStatusText(sec) {
+        if (sec <= 4) {
+          loadingText.textContent = `📤 Luồng 1/2: Đang gửi ${totalDocs > 0 ? totalDocs + ' tệp & ' : ''}${totalImgs} ảnh lên AI... (${sec}s)`;
+        } else if (sec <= 16) {
+          loadingText.textContent = `🧠 Luồng 1/2: Đang vẽ Sơ đồ tư duy, Từ khóa & Podcast... (${sec}s)`;
+        } else {
+          loadingText.textContent = `⚡ Sắp xong Luồng 1 rồi, chuẩn bị chuyển sang màn hình Kết quả... (${sec}s)`;
+        }
+      }
+
+      updateStatusText(0);
+      const timerInterval = setInterval(() => { seconds++; updateStatusText(seconds); }, 1000);
+
+      currentAbortController = new AbortController();
+      const timeoutId = setTimeout(() => currentAbortController.abort(), 85000);
+
+      const weakTopicsList = JSON.parse(localStorage.getItem('educare_weak_topics') || '[]');
+      const knttInfo = getSelectedKnttContext('create');
+      const extraText = [docsCombined, userRag].filter(Boolean).join('\n\n').slice(0, 24000);
+      const mergedRag = `${knttInfo.fullContext}${extraText ? '\n\n[NỘI DUNG TỆP TÀI LIỆU / GHI CHÚ NGƯỜI DÙNG NẠP]:\n' + extraText : ''}`;
+      const fullSubjectLabel = `${knttInfo.subj} Lớp ${knttInfo.grade} (Kết nối tri thức - GDPT 2026)`;
+
+      // Nếu người dùng chỉ tải tệp .docx/.pptx/.pdf/.txt mà không chọn ảnh, tạo 1 ảnh tiêu đề nhẹ để tương thích 100% endpoint vision_core
+      const payloadImages = createImages.length > 0
+        ? createImages.map(img => ({ base64: img.base64, mimeType: img.mimeType }))
+        : [createDocPlaceholderImage(fullSubjectLabel, createDocs[0] ? createDocs[0].name : 'Tài liệu học tập')];
+
+      const corePayload = {
+        mode: 'vision_core',
+        grade: knttInfo.grade,
+        subjectName: knttInfo.subj,
+        images: payloadImages,
+        subject: fullSubjectLabel,
+        ragContext: mergedRag,
+        weakTopics: weakTopicsList.length > 0 ? weakTopicsList.join(', ') : 'Chưa có'
+      };
+
+      try {
+        const res1 = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          signal: currentAbortController.signal,
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(corePayload)
+        });
+        const json1 = await res1.json();
+
+        if (!json1.success) {
+          alert("Có lỗi từ máy chủ: " + json1.error);
+          return;
+        }
+
+        const t1 = ((Date.now() - startTime) / 1000).toFixed(1);
+        const defaultTitle = createDocs[0]
+          ? createDocs[0].name.replace(/\.[^.]+$/, '')
+          : ((json1.data.keywords && json1.data.keywords[0]) ? json1.data.keywords[0] : fullSubjectLabel);
+
+        const lessonRecord = {
+          id: Date.now(),
+          type: 'lesson',
+          date: new Date().toLocaleString('vi-VN'),
+          subject: fullSubjectLabel,
+          title: defaultTitle,
+          ocr_text: json1.data.ocr_text || extraText.slice(0, 4000) || '',
+          keywords: json1.data.keywords || [],
+          mermaid_code: json1.data.mermaid_code || '',
+          podcast_script: json1.data.podcast_script || '',
+          quiz: []
+        };
+
+        await loadLessonIntoWorkspace(lessonRecord);
+        switchScreen('screenResult');
+
+        speedBadge.textContent = `⚡ Sơ đồ xong sau ${t1}s • Đang tạo 18 câu trắc nghiệm KNTT...`;
+        document.getElementById('quizSubTabBtn').textContent = `⏳ Đang tạo đề...`;
+        document.getElementById('quizContainer').innerHTML = `<p style="text-align:center; padding:16px;">⏳ Đang biên soạn 18 câu trắc nghiệm chuẩn Kết nối tri thức 2026...</p>`;
+
+        const quizPayload = {
+          mode: 'quiz_only',
+          grade: knttInfo.grade,
+          subjectName: knttInfo.subj,
+          subject: fullSubjectLabel,
+          ocrText: lessonRecord.ocr_text,
+          ragContext: mergedRag,
+          weakTopics: weakTopicsList.length > 0 ? weakTopicsList.join(', ') : 'Chưa có'
+        };
+
+        const res2 = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          signal: currentAbortController.signal,
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(quizPayload)
+        });
+        const json2 = await res2.json();
+
+        const tTotal = ((Date.now() - startTime) / 1000).toFixed(1);
+        if (json2.success && json2.data && Array.isArray(json2.data.quiz)) {
+          lessonRecord.quiz = json2.data.quiz;
+          lastQuizData = lessonRecord.quiz;
+          buildFlashcardsFromLesson(lessonRecord);
+          renderQuizList(false);
+          speedBadge.textContent = `✅ Đã lưu Offline • Hoàn tất ${lastQuizData.length} câu trong ${tTotal}s`;
+        } else {
+          speedBadge.textContent = `⚠️ Đã lưu Sơ đồ (${t1}s), chưa tải được bộ đề`;
+          document.getElementById('quizSubTabBtn').textContent = `📝 Trắc nghiệm (0)`;
+        }
+
+        saveItemToHistory(lessonRecord);
+        updateDashboardStats(0);
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          alert("Đã dừng yêu cầu. Bạn hãy bấm Phân tích bài học lại nhé!");
+        } else {
+          alert("Kết nối mạng bị gián đoạn (" + err.message + "). Bạn hãy bấm thử lại nhé!");
+        }
+      } finally {
+        clearInterval(timerInterval);
+        clearTimeout(timeoutId);
+        currentAbortController = null;
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    // =========================================================================
+    // LUỒNG GIẢI ĐÁP ÁN & HƯỚNG DẪN CÁCH LÀM CHI TIẾT TỪNG CÂU (HỖ TRỢ ĐA TỆP)
+    // =========================================================================
+    async function processSolveExercises() {
+      const manualText = document.getElementById('solverTextInput').value.trim();
+      const docsText = solverDocs
+        .filter(d => d.text)
+        .map(d => `=== TỆP ĐỀ BÀI: ${d.name} ===\n${d.text}`)
+        .join('\n\n');
+
+      const combinedText = [
+        manualText ? `[YÊU CẦU / GHI CHÚ CỦA HỌC SINH]:\n${manualText}` : '',
+        docsText
+      ].filter(Boolean).join('\n\n').slice(0, 28000);
+
+      if (solverImages.length === 0 && !combinedText) {
+        alert("Vui lòng tải tệp đề bài (.DOCX, .PPTX, .PDF, .XLSX, .TXT), chụp ảnh đề, hoặc nhập câu hỏi bằng chữ trước!");
+        return;
+      }
+
+      const btn = document.getElementById('solveBtn');
+      const loading = document.getElementById('solverLoadingBox');
+      const loadingText = document.getElementById('solverLoadingText');
+      btn.disabled = true;
+      loading.style.display = 'block';
+      stopPodcast();
+
+      const startTime = Date.now();
+      let seconds = 0;
+      const docCount = solverDocs.length;
+      const timerInterval = setInterval(() => {
+        seconds++;
+        loadingText.textContent = `✍️ Đang giải từng câu${docCount > 0 ? ' từ ' + docCount + ' tệp' : ''} & kiểm tra đáp án KNTT... (${seconds}s)`;
+      }, 1000);
+
+      currentAbortController = new AbortController();
+      const timeoutId = setTimeout(() => currentAbortController.abort(), 95000);
+
+      const knttInfo = getSelectedKnttContext('solver');
+      const solveStyle = document.getElementById('solverModeSelect').value;
+      const fullSubjectLabel = `${knttInfo.subj} Lớp ${knttInfo.grade} (Kết nối tri thức - GDPT 2026)`;
+
+      const payload = {
+        mode: 'solve_exercises',
+        grade: knttInfo.grade,
+        subjectName: knttInfo.subj,
+        subject: fullSubjectLabel,
+        solveStyle: solveStyle,
+        ragContext: knttInfo.fullContext,
+        textQuestions: combinedText,
+        images: solverImages.map(img => ({ base64: img.base64, mimeType: img.mimeType }))
+      };
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          signal: currentAbortController.signal,
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+
+        if (!json.success || !json.data || !Array.isArray(json.data.solutions)) {
+          alert("Không giải được đề bài: " + (json.error || "Dữ liệu trả về chưa đúng định dạng"));
+          return;
+        }
+
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        const sourceTag = solverDocs[0] ? ` (${solverDocs[0].name})` : '';
+        const solvedRecord = {
+          id: Date.now(),
+          type: 'solved_exam',
+          date: new Date().toLocaleString('vi-VN'),
+          subject: fullSubjectLabel,
+          title: `[Giải đề] ${knttInfo.subj} ${knttInfo.grade}${sourceTag} — ${json.data.solutions.length} câu`,
+          solutions: json.data.solutions
+        };
+
+        renderSolvedExercises(solvedRecord, elapsed);
+        saveItemToHistory(solvedRecord);
+        updateDashboardStats(json.data.solutions.length);
+        document.getElementById('solverResultSection').scrollIntoView({ behavior: 'smooth' });
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          alert("Đã dừng yêu cầu giải đề.");
+        } else {
+          alert("Kết nối mạng bị gián đoạn (" + err.message + "). Bạn hãy bấm thử lại nhé!");
+        }
+      } finally {
+        clearInterval(timerInterval);
+        clearTimeout(timeoutId);
+        currentAbortController = null;
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    function renderSolvedExercises(record, elapsedSec) {
+      lastSolvedObj = record;
+      document.getElementById('solverResultSection').style.display = 'block';
+      document.getElementById('solverStatusBadge').textContent =
+        elapsedSec ? `✅ Đã giải ${record.solutions.length} câu trong ${elapsedSec}s • Đã lưu Offline` : `📂 Đang xem lời giải đã lưu (${record.date})`;
+
+      const quickGrid = document.getElementById('quickKeyGrid');
+      const container = document.getElementById('solvedQuestionsContainer');
+      quickGrid.innerHTML = '';
+      container.innerHTML = '';
+
+      record.solutions.forEach((item, idx) => {
+        const qLabel = item.question_number || `Câu ${idx + 1}`;
+        const ansVal = item.correct_answer || 'Xem lời giải';
+
+        // 1. Ô bảng đáp án nhanh
+        const pill = document.createElement('div');
+        pill.className = 'quick-key-pill';
+        pill.textContent = `${qLabel}: ${ansVal}`;
+        quickGrid.appendChild(pill);
+
+        // 2. Thẻ giải chi tiết từng câu
+        const card = document.createElement('div');
+        card.className = 'solved-card';
+        card.innerHTML = `
+          <div class="solved-header">
+            <span class="solved-q-num">📌 ${qLabel} ${item.question_type ? '(' + item.question_type + ')' : ''}</span>
+            <span class="solved-ans-badge">✅ Đáp án: ${ansVal}</span>
+          </div>
+          <div class="solved-q-text">${item.question_text || ''}</div>
+          ${item.formula_or_rule ? `<div class="solved-formula-box"><strong>📘 Kiến thức / Công thức KNTT:</strong> ${item.formula_or_rule}</div>` : ''}
+          <div class="solved-steps"><strong>📝 Cách làm chi tiết:</strong>\n${item.step_by_step || ''}</div>
+          ${item.tip_or_trap ? `<div class="solved-tip"><strong>💡 Mẹo & Lưu ý:</strong> ${item.tip_or_trap}</div>` : ''}
+        `;
+
+        const askBtn = document.createElement('button');
+        askBtn.type = 'button';
+        askBtn.className = 'btn-mini';
+        askBtn.textContent = '💬 Hỏi thêm Gia sư AI về câu này';
+        askBtn.onclick = function() {
+          openTutorForSolvedQuestion(record.subject, qLabel, item.question_text, item.step_by_step);
+        };
+        card.appendChild(askBtn);
+
+        container.appendChild(card);
+      });
+    }
+
+    function openTutorForSolvedQuestion(subject, qLabel, qText, steps) {
+      if (!currentLessonObj) {
+        currentLessonObj = {
+          subject: subject,
+          title: qLabel,
+          ocr_text: `${qLabel}: ${qText}\nLời giải hiện tại: ${steps}`
+        };
+        document.getElementById('emptyResultNotice').style.display = 'none';
+        document.getElementById('resultWorkspace').style.display = 'block';
+      } else {
+        currentLessonObj.ocr_text += `\n\n[${qLabel}]: ${qText}\nLời giải: ${steps}`;
+      }
+      switchScreen('screenResult');
+      const tutorBtn = document.querySelectorAll('.sub-tab-btn')[4];
+      switchSubTab('subTutor', tutorBtn);
+      document.getElementById('tutorQuestionInput').value = `Giải thích rõ hơn bước làm của ${qLabel} giúp mình nhé!`;
+      document.getElementById('tutorQuestionInput').focus();
+    }
+
+    function speakSolverResults() {
+      if (!lastSolvedObj || !lastSolvedObj.solutions) return;
+      const fullSpeech = lastSolvedObj.solutions.map((s, i) =>
+        `${s.question_number || 'Câu ' + (i + 1)}. Đáp án đúng là ${s.correct_answer}. Cách làm: ${s.step_by_step}`
+      ).join('\n');
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(fullSpeech);
+      u.lang = 'vi-VN';
+      u.rate = 1.05;
+      window.speechSynthesis.speak(u);
+    }
+
+    async function shareSolvedResults() {
+      if (!lastSolvedObj) return;
+      const lines = lastSolvedObj.solutions.map((s, i) =>
+        `${s.question_number || 'Câu ' + (i + 1)}: ${s.correct_answer}\n- Đề: ${s.question_text}\n- Giải: ${s.step_by_step}`
+      ).join('\n\n');
+      const shareText = `✍️ ĐÁP ÁN & LỜI GIẢI CHI TIẾT (${lastSolvedObj.subject})\n\n${lines}`;
+      if (navigator.share) {
+        try { await navigator.share({ title: lastSolvedObj.title, text: shareText }); return; } catch (e) {}
+      }
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+        alert("Đã sao chép toàn bộ đáp án và lời giải vào bộ nhớ tạm!");
+      }
+    }
+
+    // =========================================================================
+    // HIỂN THỊ KẾT QUẢ HỌC TẬP, FLASHCARD, QUIZ, LỊCH SỬ OFFLINE & GIA SƯ
+    // =========================================================================
+    async function loadLessonIntoWorkspace(lesson) {
+      currentLessonObj = lesson;
+      document.getElementById('emptyResultNotice').style.display = 'none';
+      document.getElementById('resultWorkspace').style.display = 'block';
+      resetMindmapZoom();
+
+      document.getElementById('chatBox').innerHTML =
+        `<div class="chat-msg ai">Chào bạn! Mình đã sẵn sàng hỗ trợ môn <strong>${lesson.subject}</strong> (${lesson.title}). Bạn muốn hỏi chi tiết phần nào?</div>`;
+
+      const kwList = document.getElementById('keywordList');
+      kwList.innerHTML = '';
+      (lesson.keywords || []).forEach(kw => {
+        const li = document.createElement('li');
+        li.textContent = kw;
+        kwList.appendChild(li);
+      });
+      document.getElementById('ocrText').textContent = lesson.ocr_text || '';
+
+      const mermaidBox = document.getElementById('mermaidContainer');
+      const { styledGraph, plainGraph } = buildColorfulMindmapCode(lesson.mermaid_code);
+      try {
+        const { svg } = await mermaid.render('mindmapSvg_' + Date.now(), styledGraph);
+        mermaidBox.innerHTML = svg;
+      } catch (e1) {
+        try {
+          const { svg } = await mermaid.render('mindmapSvgFallback_' + Date.now(), plainGraph);
+          mermaidBox.innerHTML = svg;
+        } catch (e2) {
+          mermaidBox.innerHTML = `<pre style="text-align:left; font-size:0.85em;">${lesson.mermaid_code}</pre>`;
+        }
+      }
+
+      document.getElementById('podcastScript').textContent = lesson.podcast_script || '';
+      buildFlashcardsFromLesson(lesson);
+      lastQuizData = lesson.quiz || [];
+      renderQuizList(false);
+    }
+
+    function buildFlashcardsFromLesson(lesson) {
+      const cards = [];
+      (lesson.keywords || []).forEach((kw, i) => {
+        cards.push({
+          front: `🔑 Từ khóa cốt lõi #${i + 1}:\n${kw}`,
+          back: `Thuộc bài: ${lesson.title}\n\n${lesson.ocr_text ? lesson.ocr_text.slice(0, 220) + '...' : 'Ghi nhớ khái niệm và điều kiện áp dụng trong SGK Kết nối tri thức.'}`
+        });
+      });
+      (lesson.quiz || []).slice(0, 8).forEach((q, i) => {
+        const rightAns = (q.options && q.options[q.answer_index]) ? q.options[q.answer_index] : '';
+        cards.push({
+          front: `❓ Câu hỏi ôn nhanh #${i + 1} [${q.topic}]:\n${q.question}`,
+          back: `✅ Đáp án: ${rightAns}\n\n💡 ${q.explanation || ''}`
+        });
+      });
+      flashcardsData = cards.length > 0 ? cards : [{ front: 'Chưa có thẻ ghi nhớ', back: 'Hãy phân tích một bài học để tạo Flashcard tự động.' }];
+      fcIndex = 0;
+      fcFlipped = false;
+      renderCurrentFlashcard();
+    }
+
+    function renderCurrentFlashcard() {
+      const card = flashcardsData[fcIndex];
+      document.getElementById('fcSideTag').textContent = fcFlipped
+        ? 'MẶT SAU • ĐÁP ÁN & GIẢI THÍCH (Chạm để lật lại)'
+        : 'MẶT TRƯỚC • GỢI NHỚ KIẾN THỨC (Chạm để xem đáp án)';
+      document.getElementById('fcMainText').textContent = fcFlipped ? card.back : card.front;
+      document.getElementById('fcCounter').textContent = `${fcIndex + 1} / ${flashcardsData.length}`;
+    }
+
+    function flipFlashcard() { fcFlipped = !fcFlipped; renderCurrentFlashcard(); }
+    function prevFlashcard() { fcIndex = (fcIndex - 1 + flashcardsData.length) % flashcardsData.length; fcFlipped = false; renderCurrentFlashcard(); }
+    function nextFlashcard() { fcIndex = (fcIndex + 1) % flashcardsData.length; fcFlipped = false; renderCurrentFlashcard(); }
+
+    function updateScoreboard() {
+      const total = lastQuizData.length;
+      const score = total > 0 ? ((correctCount / total) * 10).toFixed(1) : '0.0';
+      document.getElementById('quizScoreText').textContent =
+        `Đã làm: ${answeredCount}/${total} • Đúng: ${correctCount} • Điểm: ${score}/10`;
+      document.getElementById('quizSubTabBtn').textContent = `📝 Trắc nghiệm (${total})`;
+    }
+
+    function resetCurrentQuiz() { wrongIndicesSet.clear(); stopExamTimer(); renderQuizList(false); }
+    function filterWrongQuestions() {
+      if (wrongIndicesSet.size === 0) {
+        alert("Bạn chưa có câu nào làm sai trong lượt này!");
+        return;
+      }
+      renderQuizList(true);
+    }
+
+    function startExamTimer() {
+      stopExamTimer();
+      resetCurrentQuiz();
+      let remain = 15 * 60;
+      const timerEl = document.getElementById('examTimerText');
+      timerEl.style.display = 'inline-block';
+      timerEl.textContent = '⏱️ 15:00';
+      examTimerInterval = setInterval(() => {
+        remain--;
+        const m = String(Math.floor(remain / 60)).padStart(2, '0');
+        const s = String(remain % 60).padStart(2, '0');
+        timerEl.textContent = `⏱️ ${m}:${s}`;
+        if (remain <= 0) {
+          stopExamTimer();
+          alert("⏰ Hết giờ thi thử 15 phút!");
+        }
+      }, 1000);
+    }
+
+    function stopExamTimer() {
+      if (examTimerInterval) { clearInterval(examTimerInterval); examTimerInterval = null; }
+      document.getElementById('examTimerText').style.display = 'none';
+    }
+
+    function renderQuizList(onlyWrong) {
+      if (!onlyWrong) { answeredCount = 0; correctCount = 0; }
+      updateScoreboard();
+
+      const weakTopicsList = JSON.parse(localStorage.getItem('educare_weak_topics') || '[]');
+      const notice = document.getElementById('weakTopicNotice');
+      notice.textContent = onlyWrong
+        ? `🎯 Đang hiển thị riêng ${wrongIndicesSet.size} câu bạn vừa làm sai để luyện lại:`
+        : (weakTopicsList.length > 0
+            ? `🎯 Ưu tiên củng cố chủ đề hay sai: ${weakTopicsList.slice(-3).join(', ')}`
+            : `🎯 Ma trận 3 mức độ: Nhận biết • Thông hiểu • Vận dụng (Chuẩn KNTT 2026).`);
+
+      const quizBox = document.getElementById('quizContainer');
+      quizBox.innerHTML = '';
+
+      lastQuizData.forEach((q, idx) => {
+        if (onlyWrong && !wrongIndicesSet.has(idx)) return;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'quiz-item';
+        const levelBadge = q.level ? `<span class="level-badge">${q.level}</span>` : '';
+        itemDiv.innerHTML = `<p>${levelBadge}<strong>Câu ${idx + 1} [${q.topic}]:</strong> ${q.question}</p>`;
+
+        const expDiv = document.createElement('div');
+        expDiv.className = 'explanation';
+        expDiv.textContent = '💡 Giải thích: ' + q.explanation;
+
+        q.options.forEach((opt, optIdx) => {
+          const optBtn = document.createElement('button');
+          optBtn.className = 'quiz-option';
+          optBtn.textContent = opt;
+          optBtn.onclick = function() {
+            const allBtns = itemDiv.querySelectorAll('.quiz-option');
+            allBtns.forEach(b => b.disabled = true);
+            if (!onlyWrong) { answeredCount++; updateDashboardStats(1); }
+            if (optIdx === q.answer_index) {
+              optBtn.classList.add('correct');
+              if (!onlyWrong) correctCount++;
+              wrongIndicesSet.delete(idx);
+            } else {
+              optBtn.classList.add('wrong');
+              allBtns[q.answer_index].classList.add('correct');
+              wrongIndicesSet.add(idx);
+              saveWeakTopic(q.topic);
+            }
+            updateScoreboard();
+            expDiv.style.display = 'block';
+          };
+          itemDiv.appendChild(optBtn);
+        });
+
+        itemDiv.appendChild(expDiv);
+        quizBox.appendChild(itemDiv);
+      });
+    }
+
+    function saveWeakTopic(topic) {
+      if (!topic) return;
+      let list = JSON.parse(localStorage.getItem('educare_weak_topics') || '[]');
+      if (!list.includes(topic)) {
+        list.push(topic);
+        if (list.length > 10) list.shift();
+        localStorage.setItem('educare_weak_topics', JSON.stringify(list));
+      }
+    }
+
+    function updateSettingsWeakTopics() {
+      const list = JSON.parse(localStorage.getItem('educare_weak_topics') || '[]');
+      document.getElementById('settingsWeakTopics').textContent =
+        list.length > 0 ? list.join(' • ') : 'Chưa ghi nhận chủ đề yếu nào.';
+    }
+
+    function clearWeakTopics() {
+      localStorage.removeItem('educare_weak_topics');
+      updateSettingsWeakTopics();
+      alert("Đã xóa danh sách chủ đề yếu!");
+    }
+
+    function saveItemToHistory(itemObj) {
+      let history = JSON.parse(localStorage.getItem('educare_history') || '[]');
+      history = history.filter(item => item.id !== itemObj.id);
+      history.unshift(itemObj);
+      if (history.length > 20) history.pop();
+      localStorage.setItem('educare_history', JSON.stringify(history));
+    }
+
+    function renderHistoryList() {
+      const container = document.getElementById('historyListContainer');
+      const query = (document.getElementById('historySearchInput').value || '').toLowerCase().trim();
+      const history = JSON.parse(localStorage.getItem('educare_history') || '[]');
+
+      const filtered = history.filter(item =>
+        (item.subject || '').toLowerCase().includes(query) ||
+        (item.title || '').toLowerCase().includes(query) ||
+        (item.ocr_text || '').toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--muted-text); padding:16px;">Chưa có bài học hay đề giải nào được lưu.</p>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      filtered.forEach(item => {
+        const isSolver = item.type === 'solved_exam';
+        const icon = isSolver ? '✍️' : '📘';
+        const countInfo = isSolver
+          ? `${(item.solutions || []).length} câu đã giải`
+          : `${(item.quiz || []).length} câu trắc nghiệm`;
+
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        row.innerHTML = `
+          <div class="history-info" onclick="openSavedItem(${item.id})">
+            <div class="history-title">${icon} ${item.title}</div>
+            <div class="history-meta">${item.subject} • ${countInfo} • ${item.date}</div>
+          </div>
+          <button type="button" class="btn-del-hist" onclick="deleteSavedItem(${item.id})">🗑️</button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    async function openSavedItem(id) {
+      const history = JSON.parse(localStorage.getItem('educare_history') || '[]');
+      const found = history.find(item => item.id === id);
+      if (!found) return;
+
+      if (found.type === 'solved_exam') {
+        renderSolvedExercises(found, null);
+        switchScreen('screenSolver');
+        document.getElementById('solverResultSection').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        await loadLessonIntoWorkspace(found);
+        document.getElementById('speedStatusBadge').textContent = `📂 Đang mở từ Thư viện Offline (${found.date})`;
+        switchScreen('screenResult');
+      }
+    }
+
+    function deleteSavedItem(id) {
+      let history = JSON.parse(localStorage.getItem('educare_history') || '[]');
+      history = history.filter(item => item.id !== id);
+      localStorage.setItem('educare_history', JSON.stringify(history));
+      renderHistoryList();
+      updateDashboardStats(0);
+    }
+
+    function downloadMindmapPng() {
+      const svgEl = document.querySelector('#mermaidContainer svg');
+      if (!svgEl) { alert("Chưa có sơ đồ tư duy để lưu!"); return; }
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svgEl);
+      const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const bbox = svgEl.getBBox ? svgEl.getBBox() : { width: 1200, height: 700 };
+        canvas.width = Math.max(1200, (bbox.width + 60) * 2);
+        canvas.height = Math.max(700, (bbox.height + 60) * 2);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 30, 30, canvas.width - 60, canvas.height - 60);
+        URL.revokeObjectURL(url);
+
+        const pngUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = pngUrl;
+        a.download = 'So_Do_Tu_Duy_KNTT_EduCareAI.png';
+        a.click();
+      };
+      img.src = url;
+    }
+
+    async function shareLessonSummary() {
+      if (!currentLessonObj) return;
+      const shareText = `🎓 TÓM TẮT BÀI HỌC — EDUCARE AI 360°\nMôn: ${currentLessonObj.subject}\nChủ đề: ${currentLessonObj.title}\n\n🔑 Từ khóa: ${(currentLessonObj.keywords || []).join(', ')}\n\n📄 Nội dung chính:\n${currentLessonObj.ocr_text}`;
+      if (navigator.share) {
+        try { await navigator.share({ title: currentLessonObj.title, text: shareText }); return; } catch (e) {}
+      }
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareText);
+        alert("Đã sao chép toàn bộ tóm tắt bài học vào bộ nhớ tạm!");
+      }
+    }
+
+    async function askTutor() {
+      const input = document.getElementById('tutorQuestionInput');
+      const btn = document.getElementById('askTutorBtn');
+      const chatBox = document.getElementById('chatBox');
+      const question = input.value.trim();
+      if (!question) return;
+
+      const knttFallback = getSelectedKnttContext('create');
+      const activeSubject = currentLessonObj ? currentLessonObj.subject : `${knttFallback.subj} Lớp ${knttFallback.grade} (KNTT)`;
+      const activeContext = currentLessonObj ? currentLessonObj.ocr_text : knttFallback.fullContext;
+
+      const userDiv = document.createElement('div');
+      userDiv.className = 'chat-msg user';
+      userDiv.textContent = question;
+      chatBox.appendChild(userDiv);
+      input.value = '';
+      btn.disabled = true;
+
+      const waitDiv = document.createElement('div');
+      waitDiv.className = 'chat-msg ai';
+      waitDiv.textContent = '⏳ Gia sư AI đang tra cứu SGK Kết nối tri thức...';
+      chatBox.appendChild(waitDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            mode: 'chat_tutor',
+            subject: activeSubject,
+            ocrText: activeContext,
+            question: question
+          })
+        });
+        const json = await res.json();
+        if (json.success && json.data && json.data.answer) {
+          waitDiv.textContent = json.data.answer;
+        } else {
+          waitDiv.textContent = '⚠️ Gia sư AI tạm bận, bạn thử hỏi lại sau vài giây nhé!';
+        }
+      } catch (err) {
+        waitDiv.textContent = '⚠️ Mạng đang gián đoạn, bạn kiểm tra kết nối 4G rồi thử lại nhé!';
+      } finally {
+        btn.disabled = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function speakPodcast() {
+      const text = document.getElementById('podcastScript').textContent;
+      if (!text) return;
+      if (window.speechSynthesis.paused) { window.speechSynthesis.resume(); return; }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'vi-VN';
+      utterance.rate = parseFloat(document.getElementById('speechRateSelect').value || '1.0');
+      window.speechSynthesis.speak(utterance);
+    }
+    function pausePodcast() { if (window.speechSynthesis.speaking) window.speechSynthesis.pause(); }
+    function stopPodcast() { window.speechSynthesis.cancel(); }
+
+    // =========================================================================
+    // XUẤT KẾT QUẢ GIẢI ĐỀ & BỘ TRẮC NGHIỆM RA TỆP WORD (.DOCX) CHUẨN OPENXML
+    // =========================================================================
+    function escapeXml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    async function generateAndDownloadDocx(filename, docTitle, paragraphsList) {
+      if (typeof JSZip === 'undefined') {
+        alert("Trình duyệt chưa tải xong module tạo tệp .DOCX. Bạn hãy dùng nút Chia sẻ để sao chép nhé!");
+        return;
+      }
+
+      const zip = new JSZip();
+      zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`);
+
+      zip.folder('_rels').file('.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`);
+
+      let bodyXml = `<w:p><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:color w:val="1D4ED8"/></w:rPr><w:t>${escapeXml(docTitle)}</w:t></w:r></w:p>`;
+      for (const item of paragraphsList) {
+        const lines = String(item.text || '').split('\n');
+        for (const line of lines) {
+          const boldXml = item.bold ? '<w:b/>' : '';
+          const colorXml = item.color ? `<w:color w:val="${item.color}"/>` : '';
+          bodyXml += `<w:p><w:r><w:rPr>${boldXml}${colorXml}<w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">${escapeXml(line)}</w:t></w:r></w:p>`;
+        }
+      }
+
+      zip.folder('word').file('document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>${bodyXml}</w:body>
+</w:document>`);
+
+      const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    }
+
+    async function downloadSolvedDocx() {
+      if (!lastSolvedObj || !lastSolvedObj.solutions) {
+        alert("Chưa có bài giải nào để tải xuống!");
+        return;
+      }
+      const paras = [
+        { text: `Môn học: ${lastSolvedObj.subject} | Ngày xuất: ${lastSolvedObj.date}`, bold: true },
+        { text: 'BẢNG ĐÁP ÁN NHANH: ' + lastSolvedObj.solutions.map((s, i) => `${s.question_number || 'Câu ' + (i + 1)}: ${s.correct_answer}`).join(' | '), bold: true, color: '15803D' },
+        { text: '------------------------------------------------------------' }
+      ];
+      lastSolvedObj.solutions.forEach((s, idx) => {
+        paras.push({ text: `${s.question_number || 'Câu ' + (idx + 1)}: ${s.question_text || ''}`, bold: true });
+        paras.push({ text: `=> Đáp án đúng: ${s.correct_answer}`, bold: true, color: '15803D' });
+        if (s.formula_or_rule) paras.push({ text: `Công thức / Kiến thức KNTT: ${s.formula_or_rule}` });
+        if (s.step_by_step) paras.push({ text: `Cách làm chi tiết:
+${s.step_by_step}` });
+        if (s.tip_or_trap) paras.push({ text: `Mẹo & Lưu ý: ${s.tip_or_trap}` });
+        paras.push({ text: '' });
+      });
+      await generateAndDownloadDocx('Loi_Giai_Chi_Tiet_EduCareAI.docx', lastSolvedObj.title, paras);
+    }
+
+    async function downloadQuizDocx() {
+      if (!lastQuizData || lastQuizData.length === 0) {
+        alert("Chưa có bộ câu hỏi trắc nghiệm nào để tải xuống!");
+        return;
+      }
+      const title = currentLessonObj ? `Đề Trắc Nghiệm Ôn Tập — ${currentLessonObj.subject}` : 'Đề Trắc Nghiệm Kết Nối Tri Thức 2026';
+      const paras = [
+        { text: `Chủ đề: ${currentLessonObj ? currentLessonObj.title : 'Tổng hợp KNTT 2026'} (${lastQuizData.length} câu)`, bold: true },
+        { text: '=== PHẦN 1: ĐỀ TRẮC NGHIỆM ===', bold: true, color: '1D4ED8' }
+      ];
+      lastQuizData.forEach((q, idx) => {
+        paras.push({ text: `Câu ${idx + 1} [${q.level || 'Vận dụng'} - ${q.topic || ''}]: ${q.question}`, bold: true });
+        (q.options || []).forEach(opt => paras.push({ text: `   ${opt}` }));
+        paras.push({ text: '' });
+      });
+      paras.push({ text: '=== PHẦN 2: ĐÁP ÁN & GIẢI THÍCH CHI TIẾT ===', bold: true, color: '15803D' });
+      lastQuizData.forEach((q, idx) => {
+        const rightOpt = (q.options && q.options[q.answer_index]) ? q.options[q.answer_index] : '';
+        paras.push({ text: `Câu ${idx + 1}: ${rightOpt}`, bold: true, color: '15803D' });
+        if (q.explanation) paras.push({ text: `Giải thích: ${q.explanation}` });
+      });
+      await generateAndDownloadDocx('De_Trac_Nghiem_KNTT_EduCareAI.docx', title, paras);
+    }
+
+    // Khởi tạo dữ liệu ban đầu
+    initCurriculumSelectors();
+    updateDashboardStats(0);
+  </script>
+</body>
+</html>
